@@ -25,6 +25,9 @@ private:
 public:
 	HTTPRequest() : requestType(GET) {}
 	void load(FILE* socket_pointer);
+	std::string getVersion() const;
+	REQUEST_TYPE getType() const;
+	std::string getOption(std::string& name) const;
 	friend std::ostream& operator<<(std::ostream &strm, const HTTPRequest& req);
 	virtual ~HTTPRequest() {}
 };

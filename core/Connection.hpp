@@ -1,14 +1,16 @@
 #ifndef CONNECTION_HPP_
 #define CONNECTION_HPP_
 
+#include "HTTPResponse.hpp"
 #include "HTTPRequest.hpp"
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <unistd.h>
 #include <signal.h>
 #include <string.h>
+#include <unistd.h>
 #include <iostream>
 #include <stdio.h>
+#include <thread>
 
 #define ADDR_SIZE sizeof(struct sockaddr_in)
 typedef int Socket;

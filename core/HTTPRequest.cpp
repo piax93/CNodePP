@@ -38,6 +38,20 @@ void HTTPRequest::load(FILE* socket_pointer){
 
 }
 
+std::string HTTPRequest::getVersion() const {
+	return version;
+}
+
+REQUEST_TYPE HTTPRequest::getType() const {
+	return requestType;
+}
+
+std::string HTTPRequest::getOption(std::string& name) const {
+	std::unordered_map<std::string,std::string>::const_iterator it = options.find(name);
+	if(it == options.end()) throw NPPcore::NodeppError("Option '" + name + "' not set");
+	return it->second;
+}
+
 std::ostream& operator<<(std::ostream &strm, const HTTPRequest& req) {
 	std::string m[4] = {"GET", "HEAD", "POST", "PUT"};
 	strm << "Method -> " << m[req.requestType] << "\n";

@@ -21,6 +21,7 @@ Connection::Connection(uint16_t port) {
 	action.sa_handler = Connection::sigHandler;
 	sigaction(SIGINT, &action, NULL);
 	sigaction(SIGTERM, &action, NULL);
+	sigaction(SIGPIPE, NULL, NULL);
 }
 
 void Connection::listenAndServe(int max_connections){
@@ -29,12 +30,7 @@ void Connection::listenAndServe(int max_connections){
 	socklen_t client_len = ADDR_SIZE;
 	while(true){
 		Socket act_sock = accept(server_socket, (struct sockaddr*)&client, &client_len);
-		if(act_sock > 0 && fork() == 0){
-			httpProcess(act_sock);
-			closeSocket(act_sock);
-			break;
-		}
-		closeSocket(act_sock);
+		if(act_sock > 0) std::thread(httpProcess, act_sock).detach();
 	}
 }
 
@@ -49,9 +45,11 @@ Connection::~Connection() {
 
 void httpProcess(Socket act_sock){
 	HTTPRequest request;
-	request.load(fdopen(act_sock, "r"));
-	std::cout << request;
-	exit(0);
+	FILE* socket_pointer = fdopen(act_sock, "r+");
+	request.load(socket_pointer);
+	HTTPResponse response(request.getVersion(), 200);
+	response.send(socket_pointer);
+	closeSocket(act_sock);
 }
 
 void closeSocket(Socket sock){
