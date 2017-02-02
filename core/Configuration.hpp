@@ -8,13 +8,16 @@
 #include <fstream>
 #include <string>
 
+#define CONF_FILE "settings.conf"
+
 namespace NPPcore {
 
 class Configuration {
 private:
 	std::unordered_map<std::string, std::string> values;
-public:
 	Configuration(const std::string& filename);
+public:
+	static const Configuration self;
 	std::string getValue(const std::string& name) const;
 	int getValueToInt(const std::string& name) const;
 	friend std::ostream& operator<<(std::ostream &strm, const Configuration& conf);

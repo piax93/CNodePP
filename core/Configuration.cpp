@@ -2,6 +2,8 @@
 
 namespace NPPcore {
 
+const Configuration Configuration::self(CONF_FILE);
+
 Configuration::Configuration(const std::string& filename) {
 	std::ifstream fs;
 	std::string line;
