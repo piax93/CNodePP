@@ -46,7 +46,7 @@ REQUEST_TYPE HTTPRequest::getType() const {
 	return requestType;
 }
 
-std::string HTTPRequest::getOption(std::string& name) const {
+std::string HTTPRequest::getOption(const std::string& name) const {
 	std::unordered_map<std::string,std::string>::const_iterator it = options.find(name);
 	if(it == options.end()) throw NPPcore::NodeppError("Option '" + name + "' not set");
 	return it->second;

@@ -14,6 +14,7 @@
 
 #define ADDR_SIZE sizeof(struct sockaddr_in)
 typedef int Socket;
+typedef std::string (*getPage_t)();
 
 namespace NPPcore {
 

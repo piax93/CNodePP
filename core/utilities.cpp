@@ -37,9 +37,29 @@ std::vector<std::string> splitString(char* src, char delimiter){
 	return res;
 }
 
-bool ends_with(std::string const & value, std::string const & ending) {
-    if (ending.size() > value.size()) return false;
-    return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+bool endsWith(const std::string& value, const std::string& ending) {
+	if (ending.size() > value.size()) return false;
+	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+}
+
+bool endsWith(const char* value, const std::string& ending) {
+	size_t lenv = strlen(value);
+	size_t lene = ending.length();
+	if (lene > lenv) return false;
+	for(size_t i = 1; i <= lene; i++) {
+		if(value[lenv-i] != ending[lene-i]) return false;
+	}
+	return true;
+}
+
+std::string removeExtension(const char* filename){
+	const char* dot = strrchr(filename, '.');
+	return std::string(filename, dot-filename);
+}
+
+std::string removeExtension(const std::string& filename){
+	size_t pos = filename.find_last_of('.');
+	return filename.substr(0, pos);
 }
 
 }  /* namespace util */

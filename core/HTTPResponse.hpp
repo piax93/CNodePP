@@ -21,7 +21,7 @@ public:
 	void setCode(int code);
 	void setOption(std::string name, std::string value);
 	int getCode() const;
-	std::string getOption(std::string& name) const;
+	std::string getOption(const std::string& name) const;
 	virtual ~HTTPResponse();
 };
 

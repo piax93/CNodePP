@@ -27,7 +27,7 @@ public:
 	void load(FILE* socket_pointer);
 	std::string getVersion() const;
 	REQUEST_TYPE getType() const;
-	std::string getOption(std::string& name) const;
+	std::string getOption(const std::string& name) const;
 	friend std::ostream& operator<<(std::ostream &strm, const HTTPRequest& req);
 	virtual ~HTTPRequest() {}
 };

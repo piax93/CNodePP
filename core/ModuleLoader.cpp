@@ -13,7 +13,6 @@ ModuleLoader::ModuleLoader() {
 void ModuleLoader::watchModuleFolder(){
 	int inot, wd;
 	size_t len, i;
-	char lastfile[NAME_MAX];
 	char buffer[EVENT_BUF_LEN];
 	struct inotify_event* event;
 	inot = inotify_init();
@@ -25,39 +24,32 @@ void ModuleLoader::watchModuleFolder(){
 	while(self->online){
 		len = read(inot, buffer, EVENT_BUF_LEN);
 		if(len < 0) throw NodeppError("inotify error");
-		std::this_thread::sleep_for(std::chrono::milliseconds(20));
 		i = 0;
 		while(i < len){
 			event = (struct inotify_event*) &buffer[i];
-			if(!(event->mask & IN_ISDIR)){
+			if(!(event->mask & IN_ISDIR) && util::endsWith(event->name, MOD_EXT)){
 				if (event->mask & IN_CREATE){
-					std::cout << "Create" << std::endl;
+					// std::cerr << "Created module: " << event->name << std::endl;
+					self->loadModule(util::removeExtension(event->name));
 				} else if (event->mask & IN_DELETE) {
-					std::cout << "Del" << std::endl;
-				} else if ((event->mask & IN_MODIFY) && (strcmp(lastfile, event->name) != 0)) {
-					std::cout << "Mod:'" << event->name << "'" << std::endl;
+					// std::cerr << "Deleted module: " << event->name << std::endl;
+					self->deleteModule(util::removeExtension(event->name));
 				}
 			}
-			stpcpy(lastfile, event->name);
 			i += EVENT_SIZE + event->len;
 		}
 	}
 }
 
-void ModuleLoader::loadModule(std::string name){
-	void* handle = dlopen((Configuration::self.getValue("mod_dir")+"/"+name+".o").c_str(), RTLD_LAZY);
+void ModuleLoader::loadModule(const std::string& name){
+	void* handle = dlopen((Configuration::self.getValue("mod_dir")+"/"+name+MOD_EXT).c_str(), RTLD_NOW);
 	if(!handle) throw NodeppError("Cannot load module " + name);
 	dlerror();
 	modules[name] = handle;
-	std::cout << "Loaded " << name << std::endl;
+	std::cerr << "Loaded " << name << std::endl;
 }
 
-void ModuleLoader::reloadModule(std::string name){
-	dlclose(getModule(name));
-	loadModule(name);
-}
-
-void ModuleLoader::deleteModule(std::string name){
+void ModuleLoader::deleteModule(const std::string& name){
 	dlclose(getModule(name));
 	modules.erase(name);
 }
@@ -72,21 +64,21 @@ void ModuleLoader::loadAll(){
 	}
 	while((ent = readdir(dir)) != NULL){
 		filename = std::string(ent->d_name);
-		if(util::ends_with(filename, ".o")){
-			loadModule(filename.substr(0, filename.length()-2));
+		if(util::endsWith(filename, MOD_EXT)){
+			loadModule(util::removeExtension(filename));
 		}
 	}
 	closedir(dir);
 }
 
-void* ModuleLoader::getModule(std::string name) const {
+void* ModuleLoader::getModule(const std::string& name) const {
 	std::unordered_map<std::string,void*>::const_iterator it = modules.find(name);
 	if(it == modules.end()) throw NodeppError("Module " + name + " was not loaded");
 	return it->second;
 }
 
-void* ModuleLoader::getMethod(std::string modulename, std::string methodname) const{
-	void* handle = getModule(methodname);
+void* ModuleLoader::getMethod(const std::string& modulename, const std::string& methodname) const {
+	void* handle = getModule(modulename);
 	void* method = dlsym(handle, methodname.c_str());
 	const char* dlsym_err = dlerror();
 	if(dlsym_err) throw NodeppError("Cannot load method " + methodname + " from " + modulename);

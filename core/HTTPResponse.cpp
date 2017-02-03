@@ -34,7 +34,7 @@ int HTTPResponse::getCode() const {
 	return code;
 }
 
-std::string HTTPResponse::getOption(std::string& name) const {
+std::string HTTPResponse::getOption(const std::string& name) const {
 	std::unordered_map<std::string,std::string>::const_iterator it = options.find(name);
 	if(it == options.end()) throw NPPcore::NodeppError("Option '" + name + "' not set");
 	return it->second;

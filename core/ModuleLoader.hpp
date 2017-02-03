@@ -17,6 +17,7 @@
 
 #define EVENT_SIZE (sizeof (struct inotify_event))
 #define EVENT_BUF_LEN (128 * (EVENT_SIZE + 16))
+#define MOD_EXT ".so"
 
 namespace NPPcore {
 
@@ -27,15 +28,14 @@ private:
 	std::unordered_map<std::string,void*> modules;
 	static ModuleLoader* self;
 	ModuleLoader();
-	void loadModule(std::string name);
-	void deleteModule(std::string name);
-	void reloadModule(std::string name);
+	void loadModule(const std::string& name);
+	void deleteModule(const std::string& name);
 	void loadAll();
 	static void watchModuleFolder();
 public:
 	static ModuleLoader* getInstance();
-	void* getModule(std::string name) const;
-	void* getMethod(std::string modulename, std::string methodname) const;
+	void* getModule(const std::string& name) const;
+	void* getMethod(const std::string& modulename, const std::string& methodname) const;
 	virtual ~ModuleLoader();
 };
 
