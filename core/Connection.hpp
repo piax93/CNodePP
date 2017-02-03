@@ -2,6 +2,7 @@
 #define CONNECTION_HPP_
 
 #include "HTTPResponse.hpp"
+#include "ModuleLoader.hpp"
 #include "HTTPRequest.hpp"
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -14,9 +15,10 @@
 
 #define ADDR_SIZE sizeof(struct sockaddr_in)
 typedef int Socket;
-typedef std::string (*getPage_t)();
 
 namespace NPPcore {
+
+typedef void (*getPage_t)(HTTPRequest&, HTTPResponse&);
 
 void httpProcess(Socket act_sock);
 void closeSocket(Socket sock);

@@ -1,10 +1,3 @@
-/*
- * HTTPRequest.cpp
- *
- *  Created on: Jan 31, 2017
- *      Author: mat
- */
-
 #include "HTTPRequest.hpp"
 
 namespace NPPcore {

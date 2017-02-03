@@ -36,7 +36,8 @@ void Connection::listenAndServe(int max_connections){
 
 void Connection::sigHandler(int sig){
 	delete instance;
-	exit(0);
+	std::cerr << "Stopped" << std::endl;
+	std::exit(0);
 }
 
 Connection::~Connection() {
@@ -48,6 +49,9 @@ void httpProcess(Socket act_sock){
 	FILE* socket_pointer = fdopen(act_sock, "r+");
 	request.load(socket_pointer);
 	HTTPResponse response(request.getVersion(), 200);
+	ModuleLoader* ml = ModuleLoader::getInstance();
+	getPage_t getPage = (getPage_t)ml->getMethod("testobj", "getPage");
+	getPage(request, response);
 	response.send(socket_pointer);
 	closeSocket(act_sock);
 }
