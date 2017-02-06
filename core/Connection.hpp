@@ -4,6 +4,7 @@
 #include "HTTPResponse.hpp"
 #include "ModuleLoader.hpp"
 #include "HTTPRequest.hpp"
+#include "utilities.hpp"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <signal.h>
