@@ -49,8 +49,8 @@ Connection::~Connection() {
 void httpProcess(Socket act_sock){
 	FILE* socket_pointer = fdopen(act_sock, "r+");
 	HTTPRequest request = HTTPRequest();
+	HTTPResponse response = HTTPResponse(request, 200);
 	request.load(socket_pointer);
-	HTTPResponse response = HTTPResponse(request.getVersion(), 200);
 	ModuleLoader* ml = ModuleLoader::getInstance();
 	getPage_t getPage;
 	if(ml->hasModule(request.getRoute())) {
@@ -58,14 +58,14 @@ void httpProcess(Socket act_sock){
 			getPage = (getPage_t)ml->getMethod(request.getRoute(), "getPage");
 			getPage(request, response);
 		} else {
-			response = HTTPResponse(request.getVersion(), 403);
+			response.setCode(403);
 			if(ml->hasModule("403")) {
 				getPage = (getPage_t)ml->getMethod("403", "getPage");
 				getPage(request, response);
 			}
 		}
 	} else {
-		response = HTTPResponse(request.getVersion(), 404);
+		response.setCode(404);
 		if(ml->hasModule("404")) {
 			getPage = (getPage_t)ml->getMethod("404", "getPage");
 			getPage(request, response);
