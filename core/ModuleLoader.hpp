@@ -34,6 +34,7 @@ private:
 	static void watchModuleFolder();
 public:
 	static ModuleLoader* getInstance();
+	bool hasModule(const std::string& name) const;
 	void* getModule(const std::string& name) const;
 	void* getMethod(const std::string& modulename, const std::string& methodname) const;
 	virtual ~ModuleLoader();

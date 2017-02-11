@@ -71,6 +71,11 @@ void ModuleLoader::loadAll(){
 	closedir(dir);
 }
 
+bool ModuleLoader::hasModule(const std::string& name) const {
+	if(name.length() == 0) return true;
+	return modules.find(name) != modules.end();
+}
+
 void* ModuleLoader::getModule(const std::string& name) const {
 	std::unordered_map<std::string,void*>::const_iterator it = modules.find(name);
 	if(it == modules.end()) throw NodeppError("Module " + name + " was not loaded");
@@ -78,7 +83,7 @@ void* ModuleLoader::getModule(const std::string& name) const {
 }
 
 void* ModuleLoader::getMethod(const std::string& modulename, const std::string& methodname) const {
-	void* handle = getModule(modulename);
+	void* handle = getModule(modulename.length() == 0 ? Configuration::self.getValue("mod_default") : modulename);
 	void* method = dlsym(handle, methodname.c_str());
 	const char* dlsym_err = dlerror();
 	if(dlsym_err) throw NodeppError("Cannot load method " + methodname + " from " + modulename);

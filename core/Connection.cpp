@@ -32,6 +32,7 @@ void Connection::listenAndServe(int max_connections){
 	while(true){
 		Socket act_sock = accept(server_socket, (struct sockaddr*)&client, &client_len);
 		if(act_sock > 0) std::thread(httpProcess, act_sock).detach();
+		else std::cerr << "(accept): faulty connection" << std::endl;
 	}
 }
 
@@ -49,20 +50,28 @@ void httpProcess(Socket act_sock){
 	FILE* socket_pointer = fdopen(act_sock, "r+");
 	HTTPRequest request = HTTPRequest();
 	request.load(socket_pointer);
+	HTTPResponse response = HTTPResponse(request.getVersion(), 200);
 	ModuleLoader* ml = ModuleLoader::getInstance();
-	if(request.getRoute()[0] != '_'){
-		try {
-			getPage_t getPage = (getPage_t)ml->getMethod(request.getRoute(), "getPage");
-			HTTPResponse response(request.getVersion(), 200);
+	getPage_t getPage;
+	if(ml->hasModule(request.getRoute())) {
+		if(request.getRoute()[0] != '_'){
+			getPage = (getPage_t)ml->getMethod(request.getRoute(), "getPage");
 			getPage(request, response);
-			response.send(socket_pointer);
-		} catch (const NodeppError& e) {
-			HTTPResponse response(request.getVersion(), 404);
-			// TODO: implement 404
+		} else {
+			response = HTTPResponse(request.getVersion(), 403);
+			if(ml->hasModule("403")) {
+				getPage = (getPage_t)ml->getMethod("403", "getPage");
+				getPage(request, response);
+			}
 		}
 	} else {
-		// TODO: Forbidden
+		response = HTTPResponse(request.getVersion(), 404);
+		if(ml->hasModule("404")) {
+			getPage = (getPage_t)ml->getMethod("404", "getPage");
+			getPage(request, response);
+		}
 	}
+	response.send(socket_pointer);
 	closeSocket(act_sock);
 }
 

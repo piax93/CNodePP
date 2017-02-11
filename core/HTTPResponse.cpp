@@ -2,14 +2,14 @@
 
 namespace NPPcore {
 
-const std::unordered_map<int,std::string> HTTPResponse::codes = {{200, "OK"}};
+const std::unordered_map<int,std::string> HTTPResponse::codes = {{200, "OK"}, {403, "Forbidden"}, {404, "Not Found"}};
 
 HTTPResponse::HTTPResponse(std::string version, int code) {
 	this->code = code;
 	this->version = version;
 	options["Content-Type"] = "text/html";
 	options["Server"] = "NodePP";
-	body = "Hey there, this is NodePP embrio!";
+	body = "";
 }
 
 void HTTPResponse::send(FILE* socket_pointer){

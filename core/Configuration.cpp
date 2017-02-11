@@ -9,7 +9,8 @@ Configuration::Configuration(const std::string& filename) {
 	std::string line;
 	fs.open(filename);
 	while(std::getline(fs, line)) {
-		int pos = line.find('=');
+		size_t pos = line.find('=');
+		if(line.length() == 0 || pos == line.npos) continue;
 		values[line.substr(0, pos)] = line.substr(pos+1, line.length()-pos-1);
 	}
 	fs.close();

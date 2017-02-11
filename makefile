@@ -35,3 +35,7 @@ endif
 
 run:
 	bin/core
+
+clean:
+	rm -Rf bin
+	rm -Rf module/obj
