@@ -6,7 +6,6 @@ const std::unordered_map<int,std::string> HTTPResponse::codes = {{200, "OK"}, {4
 
 HTTPResponse::HTTPResponse(HTTPRequest& _request, int code): request(_request) {
 	this->code = code;
-	this->templateSet = false;
 	options["Content-Type"] = "text/html";
 	options["Server"] = "NodePP";
 	body = "";
@@ -24,9 +23,11 @@ void HTTPResponse::send(FILE* socket_pointer){
 }
 
 void HTTPResponse::bindTemplate(const std::string& tplname, const std::unordered_map<std::string, std::string>& variables) {
-	if(!templateSet) body = TemplateParser::parse();
-	else throw NPPcore::NodeppError("Template for this response has been already set!");
-	templateSet = true;
+	body = TemplateParser::parse(tplname, variables, request);
+}
+
+void HTTPResponse::bindTemplate(const std::string& tplname) {
+	body = TemplateParser::parse(tplname, std::unordered_map<std::string,std::string>(), request);
 }
 
 void HTTPResponse::setCode(int code) {
@@ -45,7 +46,7 @@ void HTTPResponse::setBody(const std::string& body) {
 	this->body = body;
 }
 
-void HTTPResponse::appendBody(const std::string& part){
+void HTTPResponse::appendBody(const std::string& part) {
 	body += part;
 }
 

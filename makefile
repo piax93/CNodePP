@@ -1,5 +1,5 @@
-CFLAGS = -std=c++1y -rdynamic -O3 -pthread
-MODFLAGS = -std=c++1y -O3 -shared -fPIC
+CFLAGS = -std=c++1y -rdynamic -O3 -pthread -Wall
+MODFLAGS = -std=c++1y -O3 -shared -fPIC -Wall
 CLIBS = -ldl
 
 

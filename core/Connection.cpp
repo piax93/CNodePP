@@ -38,8 +38,7 @@ void Connection::listenAndServe(int max_connections){
 
 void Connection::sigHandler(int sig){
 	delete instance;
-	std::cerr << "Stopped" << std::endl;
-	std::exit(0);
+	util::die("Stopped", 0);
 }
 
 Connection::~Connection() {

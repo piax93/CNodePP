@@ -16,13 +16,12 @@ void ModuleLoader::watchModuleFolder(){
 	char buffer[EVENT_BUF_LEN];
 	struct inotify_event* event;
 	inot = inotify_init();
-	if(inot < 0) {
-		std::cerr << "Fatal: inotify_init() failed" << std::endl;
-		exit(-1);
-	}
+	if(inot < 0) util::die("Fatal: inotify_init() failed");
 	wd = inotify_add_watch(inot, Configuration::self.getValue("mod_dir").c_str(), IN_MODIFY | IN_CREATE | IN_DELETE);
+	if(wd < 0) util::die("Error adding watcher to module folder");
 	while(self->online){
 		len = read(inot, buffer, EVENT_BUF_LEN);
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		if(len < 0) throw NodeppError("inotify error");
 		i = 0;
 		while(i < len){
@@ -43,7 +42,7 @@ void ModuleLoader::watchModuleFolder(){
 
 void ModuleLoader::loadModule(const std::string& name){
 	void* handle = dlopen((Configuration::self.getValue("mod_dir")+"/"+name+MOD_EXT).c_str(), RTLD_NOW);
-	if(!handle) throw NodeppError("Cannot load module " + name);
+	if(!handle) throw NodeppError("Cannot load module " + name + ": " + std::string(dlerror()));
 	dlerror();
 	modules[name] = handle;
 	std::cerr << "Loaded " << name << std::endl;
@@ -58,10 +57,7 @@ void ModuleLoader::loadAll(){
 	struct dirent* ent;
 	DIR* dir = opendir(Configuration::self.getValue("mod_dir").c_str());
 	std::string filename;
-	if(dir == NULL) {
-		std::cerr << "Fatal: cannot open module directory";
-		exit(-1);
-	}
+	if(dir == NULL) util::die("Fatal: cannot open module directory");
 	while((ent = readdir(dir)) != NULL){
 		filename = std::string(ent->d_name);
 		if(util::endsWith(filename, MOD_EXT)){

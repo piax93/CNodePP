@@ -2,6 +2,12 @@
 
 namespace util {
 
+/**
+ * Split string into tokens
+ * @param src String to split
+ * @param delimiter Delimiter string
+ * @return Array of tokens
+ */
 std::vector<std::string> splitString(const std::string& src, const std::string& delimiter){
 	std::vector<std::string> res;
 	std::string tmp(src);
@@ -18,9 +24,14 @@ std::vector<std::string> splitString(const std::string& src, const std::string& 
 	return res;
 }
 
+/**
+ * Split string into tokens
+ * @param src String to split
+ * @param delimiter Delimiter character
+ * @return Array of tokens
+ */
 std::vector<std::string> splitString(char* src, char delimiter){
 	std::vector<std::string> res;
-	size_t len = strlen(src);
 	char* pos;
 	char* tmp = src;
 	while(true){
@@ -53,6 +64,9 @@ unsigned char hexToChar(const std::string &str) {
 	return (unsigned char) c;
 }
 
+/**
+ * Encode string using URL notations
+ */
 std::string urlEncode(const std::string& toEncode) {
 	std::ostringstream out;
 	for(std::string::size_type i=0; i < toEncode.length(); ++i) {
@@ -73,6 +87,9 @@ std::string urlEncode(const std::string& toEncode) {
 	return out.str();
 }
 
+/**
+ * Decode URL-Encoded string
+ */
 std::string urlDecode(const std::string &toDecode) {
 	std::ostringstream out;
 	for(std::string::size_type i=0; i < toDecode.length(); ++i) {
@@ -87,11 +104,21 @@ std::string urlDecode(const std::string &toDecode) {
 	return out.str();
 }
 
+/**
+ * Check if string end with a certain suffix
+ * @param value String to check
+ * @param ending Ending
+ */
 bool endsWith(const std::string& value, const std::string& ending) {
 	if (ending.size() > value.size()) return false;
 	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
+/**
+ * Check if string end with a certain suffix
+ * @param value String to check
+ * @param ending Ending
+ */
 bool endsWith(const char* value, const std::string& ending) {
 	size_t lenv = strlen(value);
 	size_t lene = ending.length();
@@ -102,16 +129,41 @@ bool endsWith(const char* value, const std::string& ending) {
 	return true;
 }
 
+/**
+ * Remove extension from filename
+ */
 std::string removeExtension(const char* filename){
 	const char* dot = strrchr(filename, '.');
 	return std::string(filename, dot-filename);
 }
 
+/**
+ * Remove extension from filename
+ */
 std::string removeExtension(const std::string& filename){
 	size_t pos = filename.find_last_of('.');
 	return filename.substr(0, pos);
 }
 
+/**
+ * Store a complete text file in a string
+ * @param filename File path
+ * @return String containing file content
+ */
+std::string readFileToString(const std::string& filename){
+	std::ifstream ifs(filename.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
+	std::ifstream::pos_type fileSize = ifs.tellg();
+	ifs.seekg(0, std::ios::beg);
+	std::vector<char> bytes(fileSize);
+	ifs.read(&bytes[0], fileSize);
+	return std::string(&bytes[0], fileSize);
+}
+
+/**
+ * Terminate the program displaying an error message
+ * @param message Message to display
+ * @param status Exit status
+ */
 void die(const std::string& message, int status){
 	std::cerr << message << std::endl;
 	std::exit(status);

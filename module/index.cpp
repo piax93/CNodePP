@@ -1,11 +1,13 @@
 #include "../core/HTTPResponse.hpp"
 #include "../core/HTTPRequest.hpp"
+#include <unordered_map>
 #include <string>
 
 extern "C" {
 
 extern void getPage(NPPcore::HTTPRequest& request, NPPcore::HTTPResponse& response){
-	response.setBody("<h1>Che bel body!!!</h1>");
+	std::unordered_map<std::string,std::string> vars = {{"var1", "Ciaone."}, {"var2", "figata"}};
+	response.bindTemplate("index", vars);
 }
 
 }

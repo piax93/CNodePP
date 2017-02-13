@@ -14,7 +14,6 @@ namespace NPPcore {
 class HTTPResponse {
 private:
 	int code;
-	bool templateSet;
 	std::string body;
 	HTTPRequest& request;
 	std::unordered_map<std::string,std::string> options;
@@ -26,6 +25,7 @@ public:
 	void setOption(const std::string& name, const std::string& value);
 	void setBody(const std::string& body);
 	void appendBody(const std::string& part);
+	void bindTemplate(const std::string& tplname);
 	void bindTemplate(const std::string& tplname, const std::unordered_map<std::string, std::string>& variables);
 	int getCode() const;
 	std::string getOption(const std::string& name) const;

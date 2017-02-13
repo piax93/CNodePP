@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <iomanip>
 #include <vector>
@@ -20,6 +21,7 @@ std::string removeExtension(const std::string& filename);
 void die(const std::string& message, int status=-1);
 std::string urlEncode(const std::string& toEncode);
 std::string urlDecode(const std::string &toDecode);
+std::string readFileToString(const std::string& filename);
 
 }  /* namespace util */
 
