@@ -2,6 +2,7 @@
 #define CONFIGURATION_HPP_
 
 #include "NodeppError.hpp"
+#include "utilities.hpp"
 #include <unordered_map>
 #include <exception>
 #include <iostream>
@@ -9,6 +10,7 @@
 #include <string>
 
 #define CONF_FILE "settings.conf"
+#define CONF_ASSIGN_SYMBOL '='
 
 namespace NPPcore {
 

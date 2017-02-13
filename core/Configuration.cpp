@@ -6,12 +6,14 @@ const Configuration Configuration::self(CONF_FILE);
 
 Configuration::Configuration(const std::string& filename) {
 	std::ifstream fs;
-	std::string line;
+	std::string line, name, value;
 	fs.open(filename);
 	while(std::getline(fs, line)) {
-		size_t pos = line.find('=');
+		size_t pos = line.find(CONF_ASSIGN_SYMBOL);
 		if(line.length() == 0 || pos == line.npos) continue;
-		values[line.substr(0, pos)] = line.substr(pos+1, line.length()-pos-1);
+		name = line.substr(0, pos);
+		value = line.substr(pos+1, line.length()-pos-1);
+		values[util::trim(name)] = util::trim(value);
 	}
 	fs.close();
 }
