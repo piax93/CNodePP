@@ -1,41 +1,63 @@
+CC=g++
 CFLAGS = -std=c++1y -rdynamic -O3 -pthread -Wall
 MODFLAGS = -std=c++1y -O3 -shared -fPIC -Wall
 CLIBS = -ldl
 
+SOURCEDIR=core
+INCLUDEDIR=$(SOURCEDIR)
+SOURCES=$(wildcard $(SOURCEDIR)/*.cpp)
+OBJECTSDIR=bin/obj
+OBJECTS=$(patsubst $(SOURCEDIR)/%,$(OBJECTSDIR)/%,$(SOURCES:.cpp=.o))
+EXECUTABLEDIR=bin
+EXECUTABLE=core
+MODSRCDIR=module
+MODDIR=$(EXECUTABLEDIR)/module
+MODULES=$(wildcard $(MODSRCDIR)/*.cpp)
+MODOBJECTS=$(patsubst $(MODSRCDIR)/%,$(MODDIR)/%,$(MODULES:.cpp=.so))
+MODALIAS=$(MODULES:.cpp=)
+TMPDIR=$(EXECUTABLEDIR)/tmp
+DIRS=$(EXECUTABLEDIR) $(OBJECTSDIR) $(MODDIR) $(TMPDIR)
 
-compile_core:
-	mkdir -p bin
-	g++ $(CFLAGS) -o bin/core core/*.cpp $(CLIBS)
 
-debug:
-	mkdir -p bin
-	g++ $(CFLAGS) -g -o bin/core core/*.cpp $(CLIBS)
+.PHONY: core debug module all_modules run clean $(MODALIAS)
 
-all_modules:
-	mkdir -p module/obj
-	$(eval temp := $(shell mktemp -d))
-	$(foreach name, $(wildcard module/*.cpp), \
-    g++ $(MODFLAGS) -o $(temp)/$(notdir $(basename $(name))).so $(name); \
-		rm -f module/obj/$(notdir $(basename $(name))).so; \
-		cp $(temp)/$(notdir $(basename $(name))).so module/obj/; \
-	)
-	rm -R $(temp)
 
-compile_module:
-ifdef MOD
-	mkdir -p module/obj
-	$(eval temp := $(shell mktemp -d))
-	g++ $(MODFLAGS) -o $(temp)/$(MOD).so module/$(MOD).cpp
-	rm -f module/obj/$(MOD).so
-	cp $(temp)/$(MOD).so module/obj/
-	rm -R $(temp)
-else
-	echo "Usage: make module MOD=<module_name>"
-endif
+core: $(OBJECTS) | $(EXECUTABLEDIR)
+	$(CC) $(CFLAGS) -o $(EXECUTABLEDIR)/$(EXECUTABLE) $(OBJECTS) $(CLIBS)
 
-run:
-	bin/core
+
+debug: | $(EXECUTABLEDIR)
+	$(CC) $(CFLAGS) -g -o $(EXECUTABLEDIR)/$(EXECUTABLE) $(SOURCEDIR)/*.cpp $(CLIBS)
+
+
+run: core settings.conf
+	$(EXECUTABLEDIR)/$(EXECUTABLE)
+
 
 clean:
-	rm -Rf bin
-	rm -Rf module/obj
+	rm -Rf $(EXECUTABLEDIR)
+
+
+$(DIRS):
+	mkdir -p $@
+
+
+.SECONDEXPANSION:
+$(OBJECTS): $$(patsubst %.o,%.cpp,$$(patsubst $$(OBJECTSDIR)/%,$$(SOURCEDIR)/%,$$@)) | $(OBJECTSDIR)
+	$(CC) $(CFLAGS) -c -I $(INCLUDEDIR) $(patsubst %.o,%.cpp,$(patsubst $(OBJECTSDIR)/%,$(SOURCEDIR)/%,$@)) -o $@ $(CLIBS)
+
+
+.SECONDEXPANSION:
+$(MODOBJECTS): $$(patsubst %.so,%.cpp,$$(patsubst $$(MODDIR)/%,$$(MODSRCDIR)/%,$$@)) | $(MODDIR) $(TMPDIR)
+	$(eval MODNAME := $(notdir $@))
+	$(CC) $(MODFLAGS) -o $(TMPDIR)/$(MODNAME) $(MODSRCDIR)/$(MODNAME:.so=.cpp)
+	rm -f $@
+	cp $(TMPDIR)/$(MODNAME) $(MODDIR)/
+	rm -f $($TMPDIR)/$(MODNAME)
+
+
+all_modules: $(MODOBJECTS)
+
+
+.SECONDEXPANSION:
+$(MODALIAS): $$(patsubst $$(MODSRCDIR)/%,$$(MODDIR)/%.so,$$@)

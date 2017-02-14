@@ -1,3 +1,5 @@
+#!/bin/bash
+
 pushd $(dirname "$0") &> /dev/null
 
 if [ -z $1 ]; then
@@ -15,7 +17,7 @@ else
 extern "C" {
 
 extern void getPage(NPPcore::HTTPRequest& request, NPPcore::HTTPResponse& response){
-
+	response.setBody("<h2>Hi! I'm your new module, nice to meet you.</h2>");
 }
 
 }

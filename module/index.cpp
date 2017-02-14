@@ -6,7 +6,7 @@
 extern "C" {
 
 extern void getPage(NPPcore::HTTPRequest& request, NPPcore::HTTPResponse& response){
-	std::unordered_map<std::string,std::string> vars = {{"var1", "Ciaone."}, {"var2", "figata"}};
+	std::unordered_map<std::string,std::string> vars = {{"var1", "Byebye."}, {"var2", "Supercool"}};
 	response.bindTemplate("index", vars);
 }
 

@@ -149,25 +149,25 @@ std::string removeExtension(const std::string& filename){
  * Trim start of a string
  */
 std::string ltrim(const std::string& s) {
-    std::string res(s);
+	std::string res(s);
 	res.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
-    return res;
+	return res;
 }
 
 /**
  * Trim end of a string
  */
 std::string rtrim(const std::string& s) {
-    std::string res(s);
+	std::string res(s);
 	res.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
-    return res;
+	return res;
 }
 
 /**
  * Trim both ends of a string
  */
 std::string trim(const std::string& s) {
-    return ltrim(rtrim(s));
+	return ltrim(rtrim(s));
 }
 
 /**

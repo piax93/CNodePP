@@ -10,8 +10,9 @@ Have you ever dreamed of creating your own HTTP server from scratch? Me neither,
 #### What needs to be done
 * Complete HTTP specifications (at least the most important features).
 * Add the functionality to include submodules in templates.
+* Add compression library.
+* Add SSL compatibility.
 * Add more parameters to the settings.
-* Create a real makefile instead of the garbage I wrote.
 * Make everything a little more robust and write some documentation.
 
 **If you think this is awfully implemented right now but you like the idea, hop on board and join me in this time wasting project.**
@@ -20,7 +21,7 @@ Have you ever dreamed of creating your own HTTP server from scratch? Me neither,
 
 To compile everything and run:
 
-    make compile_core
+    make core
     make all_modules
     bin/core
 
@@ -32,5 +33,5 @@ To create a new module:
 
 To compile a single module:
 
-    make compile_module MOD=<module_name>
+    make module/<module_name>
 
