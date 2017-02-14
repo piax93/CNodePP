@@ -19,7 +19,7 @@ TMPDIR=$(EXECUTABLEDIR)/tmp
 DIRS=$(EXECUTABLEDIR) $(OBJECTSDIR) $(MODDIR) $(TMPDIR)
 
 
-.PHONY: core debug module all_modules run clean $(MODALIAS)
+.PHONY: core debug all_modules run clean $(MODALIAS)
 
 
 core: $(OBJECTS) | $(EXECUTABLEDIR)
@@ -42,12 +42,15 @@ $(DIRS):
 	mkdir -p $@
 
 
+all_modules: $(MODOBJECTS)
+
+
+
 .SECONDEXPANSION:
 $(OBJECTS): $$(patsubst %.o,%.cpp,$$(patsubst $$(OBJECTSDIR)/%,$$(SOURCEDIR)/%,$$@)) | $(OBJECTSDIR)
 	$(CC) $(CFLAGS) -c -I $(INCLUDEDIR) $(patsubst %.o,%.cpp,$(patsubst $(OBJECTSDIR)/%,$(SOURCEDIR)/%,$@)) -o $@ $(CLIBS)
 
 
-.SECONDEXPANSION:
 $(MODOBJECTS): $$(patsubst %.so,%.cpp,$$(patsubst $$(MODDIR)/%,$$(MODSRCDIR)/%,$$@)) | $(MODDIR) $(TMPDIR)
 	$(eval MODNAME := $(notdir $@))
 	$(CC) $(MODFLAGS) -o $(TMPDIR)/$(MODNAME) $(MODSRCDIR)/$(MODNAME:.so=.cpp)
@@ -56,8 +59,4 @@ $(MODOBJECTS): $$(patsubst %.so,%.cpp,$$(patsubst $$(MODDIR)/%,$$(MODSRCDIR)/%,$
 	rm -f $($TMPDIR)/$(MODNAME)
 
 
-all_modules: $(MODOBJECTS)
-
-
-.SECONDEXPANSION:
 $(MODALIAS): $$(patsubst $$(MODSRCDIR)/%,$$(MODDIR)/%.so,$$@)
