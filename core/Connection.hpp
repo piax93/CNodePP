@@ -19,22 +19,18 @@ typedef int Socket;
 
 namespace NPPcore {
 
-typedef void (*getPage_t)(HTTPRequest&, HTTPResponse&);
-
 void httpProcess(Socket act_sock);
 void closeSocket(Socket sock);
 
 class Connection {
 private:
 	Socket server_socket;
+	uint16_t port;
+	uint16_t max_connection_queue;
 	static void sigHandler(int sig);
-	Connection(uint16_t port);
 public:
-	static Connection& getInstance(uint16_t port){
-		static Connection instance(port);
-		return instance;
-	}
-	void listenAndServe(int max_connections);
+	Connection();
+	void listenAndServe();
 	virtual ~Connection();
 };
 

@@ -39,6 +39,8 @@ public:
 		static ModuleLoader instance;
 		return instance;
 	}
+	ModuleLoader(ModuleLoader const&) = delete;
+	void operator=(ModuleLoader const&) = delete;
 	bool hasModule(const std::string& name) const;
 	void* getModule(const std::string& name) const;
 	void* getMethod(const std::string& modulename, const std::string& methodname) const;

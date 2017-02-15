@@ -41,6 +41,7 @@ void HTTPRequest::load(FILE* socket_pointer){
 		options[std::string(linebuffer)] = std::string(colon+1);
 	}
 
+	delete[] linebuffer;
 }
 
 std::string HTTPRequest::getVersion() const {

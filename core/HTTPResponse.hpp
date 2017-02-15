@@ -1,13 +1,18 @@
 #ifndef HTTPRESPONSE_HPP_
 #define HTTPRESPONSE_HPP_
 
-#include "TemplateParser.hpp"
+#include "Configuration.hpp"
+#include "ModuleLoader.hpp"
 #include "NodeppError.hpp"
 #include "HTTPRequest.hpp"
+#include "utilities.hpp"
 #include <unordered_map>
 #include <iostream>
 #include <stdio.h>
 #include <string>
+#include <regex>
+
+#define MAX_RECURSION 5
 
 namespace NPPcore {
 
@@ -15,6 +20,7 @@ class HTTPResponse {
 private:
 	int code;
 	std::string body;
+	size_t bindCount;
 	HTTPRequest& request;
 	std::unordered_map<std::string,std::string> options;
 public:
@@ -33,6 +39,8 @@ public:
 	friend std::ostream& operator<<(std::ostream &strm, const HTTPResponse& resp);
 	virtual ~HTTPResponse();
 };
+
+typedef void (*getPage_t)(HTTPRequest&, HTTPResponse&);
 
 std::ostream& operator<<(std::ostream &strm, const HTTPResponse& resp);
 

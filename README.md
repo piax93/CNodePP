@@ -1,15 +1,15 @@
 # CNodePP
 
-Have you ever dreamed of creating your own HTTP server from scratch? Me neither, but I was curious to see how far I could go. What I'm trying to do is bringing the code-style of the Node.js http framework in a C++ environment. The idea is to have a central core handling swappable submodules, compiled as shared objects, which represent the various routes/functionalities of the web service.
+Have you ever dreamed of creating your own HTTP server from scratch? Me neither, but I was curious to see how far I could go. What I'm trying to do is bringing the code-style of the Node.js http framework in a C++ environment. The idea is to have a central core handling swappable submodules, compiled as shared objects, which represent the various routes/functionalities of the web service. It is compatible with Linux only, I don't see any good reason to run a server on another OS.
 
 #### What has been done so far
 * Structure to hot-swap modules.
-* 0.01% of the HTTP standard (just enough to answer a GET requests).
-* Template parser to insert variables in html files.
+* 0.01% of the HTTP standard (just enough to answer GET requests).
+* Template parsing to insert submodules and variables in html files.
 
 #### What would be cool to get done
 * Complete HTTP specifications (at least the most important features).
-* Add the functionality to include submodules in templates.
+* Interface to GET static resources.
 * Use pre-forking (to avoid too many simultaneous requests).
 * Add compression library.
 * Add SSL compatibility.
@@ -35,4 +35,3 @@ To create a new module:
 To compile a single module:
 
     make module/<module_name>
-

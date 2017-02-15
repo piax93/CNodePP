@@ -3,8 +3,11 @@
 #include "Configuration.hpp"
 
 int main(int argc, char **argv) {
-	NPPcore::Configuration& conf = NPPcore::Configuration::getInstance();
-	NPPcore::Connection& connection = NPPcore::Connection::getInstance(conf.getValueToInt("port"));
-	connection.listenAndServe(conf.getValueToInt("max_conn"));
+
+	if(argc > 1) NPPcore::Configuration::setup(argv[1]);
+
+	NPPcore::Connection connection;
+	connection.listenAndServe();
+
 	return 0;
 }

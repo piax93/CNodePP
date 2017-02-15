@@ -2,7 +2,10 @@
 
 namespace NPPcore {
 
-Connection::Connection(uint16_t port) {
+Connection::Connection() {
+	Configuration& conf = Configuration::getInstance();
+	port = conf.getValueToInt("port");
+	max_connection_queue = conf.getValueToInt("max_conn");
 	struct sockaddr_in saddr;
 	server_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
 	if(server_socket < 0) util::die("Socket creation error");
@@ -18,8 +21,8 @@ Connection::Connection(uint16_t port) {
 	sigaction(SIGPIPE, NULL, NULL);
 }
 
-void Connection::listenAndServe(int max_connections){
-	listen(server_socket, max_connections);
+void Connection::listenAndServe(){
+	listen(server_socket, max_connection_queue);
 	struct sockaddr_in client;
 	socklen_t client_len = ADDR_SIZE;
 	while(true){
@@ -39,9 +42,9 @@ Connection::~Connection() {
 
 void httpProcess(Socket act_sock){
 	FILE* socket_pointer = fdopen(act_sock, "r+");
-	HTTPRequest request = HTTPRequest();
-	HTTPResponse response = HTTPResponse(request, 200);
+	HTTPRequest request;
 	request.load(socket_pointer);
+	HTTPResponse response(request, 200);
 	ModuleLoader& ml = ModuleLoader::getInstance();
 	getPage_t getPage;
 	if(ml.hasModule(request.getRoute())) {

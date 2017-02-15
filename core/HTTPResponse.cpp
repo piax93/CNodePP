@@ -6,16 +6,16 @@ const std::unordered_map<int,std::string> HTTPResponse::codes = {{200, "OK"}, {4
 
 HTTPResponse::HTTPResponse(HTTPRequest& _request, int code): request(_request) {
 	this->code = code;
+	bindCount = 0;
 	options["Content-Type"] = "text/html";
 	options["Server"] = "NodePP";
 	body = "";
 }
 
 void HTTPResponse::send(FILE* socket_pointer){
-	std::unordered_map<std::string,std::string>::const_iterator it;
 	fprintf(socket_pointer, "%s %d %s\r\n", request.getVersion().c_str(), code, codes.find(code)->second.c_str());
 	options["Content-Length"] = std::to_string(body.length());
-	for(it = options.begin(); it != options.end(); it++)
+	for(auto it = options.begin(); it != options.end(); it++)
 		fprintf(socket_pointer, "%s:%s\r\n", it->first.c_str(), it->second.c_str());
 	fputs("\r\n", socket_pointer);
 	fputs(body.c_str(), socket_pointer);
@@ -23,11 +23,36 @@ void HTTPResponse::send(FILE* socket_pointer){
 }
 
 void HTTPResponse::bindTemplate(const std::string& tplname, const std::unordered_map<std::string, std::string>& variables) {
-	body = TemplateParser::parse(tplname, variables, request);
+	if(bindCount > MAX_RECURSION) {
+		std::cerr << "Bind recursion stopped" << std::endl;
+		return;
+	}
+	Configuration& conf = Configuration::getInstance();
+	ModuleLoader& ml = ModuleLoader::getInstance();
+	std::string filename = conf.getValue("template_dir") + "/" + tplname + "." + conf.getValue("template_ext");
+	body = util::readFileToString(filename);
+	std::regex pattern("\\{[\\{\\%]\\s*([a-zA-Z0-9_]+)\\s*[\\}\\%]\\}");
+	std::regex_iterator<std::string::iterator> it(body.begin(), body.end(), pattern);
+	std::regex_iterator<std::string::iterator> itend;
+	HTTPResponse dummy(request, 200);
+	while(it != itend){
+		if(it->str()[1] == '%' && ml.hasModule(it->str(1))){
+			getPage_t getPage = (getPage_t) ml.getMethod(it->str(1), "getPage");
+			dummy.body = "";
+			dummy.bindCount = bindCount+1;
+			dummy.options = options;
+			getPage(request, dummy);
+			body.replace(it->position(), it->length(), dummy.getBody());
+		} else {
+			auto varvalue = variables.find(it->str(1));
+			if(varvalue != variables.end()) body.replace(it->position(), it->length(), varvalue->second);
+		}
+		it++;
+	}
 }
 
 void HTTPResponse::bindTemplate(const std::string& tplname) {
-	body = TemplateParser::parse(tplname, std::unordered_map<std::string,std::string>(), request);
+	bindTemplate(tplname, std::unordered_map<std::string,std::string>());
 }
 
 void HTTPResponse::setCode(int code) {

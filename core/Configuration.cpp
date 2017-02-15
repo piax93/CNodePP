@@ -2,6 +2,8 @@
 
 namespace NPPcore {
 
+std::string Configuration::file = "";
+
 Configuration::Configuration(const std::string& filename) {
 	std::ifstream fs;
 	std::string line, name, value;
@@ -16,6 +18,10 @@ Configuration::Configuration(const std::string& filename) {
 	fs.close();
 }
 
+void Configuration::setup(char* filename){
+	file = std::string(filename);
+}
+
 std::string Configuration::getValue(const std::string& name) const {
 	std::unordered_map<std::string,std::string>::const_iterator it = values.find(name);
 	if(it == values.end()) throw NPPcore::NodeppError("Parameter " + name + " is missing from configuration");
@@ -27,8 +33,7 @@ int Configuration::getValueToInt(const std::string& name) const {
 }
 
 std::ostream& operator<<(std::ostream &strm, const Configuration& conf) {
-	std::unordered_map<std::string,std::string>::const_iterator it;
-	for(it = conf.values.begin(); it != conf.values.end(); it++){
+	for(auto it = conf.values.begin(); it != conf.values.end(); it++){
 		strm << it->first << " -> " << it->second << std::endl;
 	}
 	return strm;
