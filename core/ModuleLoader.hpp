@@ -25,15 +25,20 @@ class ModuleLoader {
 private:
 	bool online;
 	std::thread watcher;
+	std::string modfolder;
+	std::string defaultmod;
 	std::unordered_map<std::string,void*> modules;
-	static ModuleLoader* self;
+
 	ModuleLoader();
 	void loadModule(const std::string& name);
 	void deleteModule(const std::string& name);
 	void loadAll();
-	static void watchModuleFolder();
+	void watchModuleFolder();
 public:
-	static ModuleLoader* getInstance();
+	static ModuleLoader& getInstance() {
+		static ModuleLoader instance;
+		return instance;
+	}
 	bool hasModule(const std::string& name) const;
 	void* getModule(const std::string& name) const;
 	void* getMethod(const std::string& modulename, const std::string& methodname) const;

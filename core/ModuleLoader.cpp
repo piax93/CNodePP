@@ -2,12 +2,13 @@
 
 namespace NPPcore {
 
-ModuleLoader* ModuleLoader::self = NULL;
-
 ModuleLoader::ModuleLoader() {
+	Configuration& conf = Configuration::getInstance();
 	online = true;
+	modfolder = conf.getValue("mod_dir");
+	defaultmod = conf.getValue("mod_default");
 	loadAll();
-	watcher = std::thread(watchModuleFolder);
+	watcher = std::thread(&ModuleLoader::watchModuleFolder, this);
 }
 
 void ModuleLoader::watchModuleFolder(){
@@ -17,9 +18,9 @@ void ModuleLoader::watchModuleFolder(){
 	struct inotify_event* event;
 	inot = inotify_init();
 	if(inot < 0) util::die("Fatal: inotify_init() failed");
-	wd = inotify_add_watch(inot, Configuration::self.getValue("mod_dir").c_str(), IN_MODIFY | IN_CREATE | IN_DELETE);
+	wd = inotify_add_watch(inot, modfolder.c_str(), IN_MODIFY | IN_CREATE | IN_DELETE);
 	if(wd < 0) util::die("Error adding watcher to module folder");
-	while(self->online){
+	while(online){
 		len = read(inot, buffer, EVENT_BUF_LEN);
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		if(len < 0) throw NodeppError("inotify error");
@@ -29,10 +30,10 @@ void ModuleLoader::watchModuleFolder(){
 			if(!(event->mask & IN_ISDIR) && util::endsWith(event->name, MOD_EXT)){
 				if (event->mask & IN_CREATE){
 					// std::cerr << "Created module: " << event->name << std::endl;
-					self->loadModule(util::removeExtension(event->name));
+					loadModule(util::removeExtension(event->name));
 				} else if (event->mask & IN_DELETE) {
 					// std::cerr << "Deleted module: " << event->name << std::endl;
-					self->deleteModule(util::removeExtension(event->name));
+					deleteModule(util::removeExtension(event->name));
 				}
 			}
 			i += EVENT_SIZE + event->len;
@@ -41,7 +42,7 @@ void ModuleLoader::watchModuleFolder(){
 }
 
 void ModuleLoader::loadModule(const std::string& name){
-	void* handle = dlopen((Configuration::self.getValue("mod_dir")+"/"+name+MOD_EXT).c_str(), RTLD_NOW);
+	void* handle = dlopen((modfolder+"/"+name+MOD_EXT).c_str(), RTLD_NOW);
 	if(!handle) throw NodeppError("Cannot load module " + name + ": " + std::string(dlerror()));
 	dlerror();
 	modules[name] = handle;
@@ -55,7 +56,7 @@ void ModuleLoader::deleteModule(const std::string& name){
 
 void ModuleLoader::loadAll(){
 	struct dirent* ent;
-	DIR* dir = opendir(Configuration::self.getValue("mod_dir").c_str());
+	DIR* dir = opendir(modfolder.c_str());
 	std::string filename;
 	if(dir == NULL) util::die("Fatal: cannot open module directory");
 	while((ent = readdir(dir)) != NULL){
@@ -79,22 +80,22 @@ void* ModuleLoader::getModule(const std::string& name) const {
 }
 
 void* ModuleLoader::getMethod(const std::string& modulename, const std::string& methodname) const {
-	void* handle = getModule(modulename.length() == 0 ? Configuration::self.getValue("mod_default") : modulename);
+	void* handle = getModule(modulename.length() == 0 ? defaultmod : modulename);
 	void* method = dlsym(handle, methodname.c_str());
 	const char* dlsym_err = dlerror();
 	if(dlsym_err) throw NodeppError("Cannot load method " + methodname + " from " + modulename);
 	return method;
 }
 
-ModuleLoader* ModuleLoader::getInstance(){
-	if(self == NULL) self = new ModuleLoader();
-	return self;
-}
-
 ModuleLoader::~ModuleLoader() {
-	std::unordered_map<std::string,void*>::const_iterator it;
-	for(it = modules.begin(); it != modules.end(); it++) dlclose(it->second);
+	for(auto it = modules.begin(); it != modules.end(); it++) dlclose(it->second);
 	online = false;
+	std::ofstream ofs;
+	std::string dummy = modfolder + "/.enddummy";
+	ofs.open(dummy);
+	ofs << '1';
+	ofs.close();
+	remove(dummy.c_str());
 	watcher.join();
 }
 

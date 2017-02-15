@@ -19,11 +19,16 @@ private:
 	std::unordered_map<std::string, std::string> values;
 	Configuration(const std::string& filename);
 public:
-	static const Configuration self;
+	static Configuration& getInstance() {
+		static Configuration self(CONF_FILE);
+		return self;
+	}
+	Configuration(Configuration const&) = delete;
+	void operator=(Configuration const&) = delete;
 	std::string getValue(const std::string& name) const;
 	int getValueToInt(const std::string& name) const;
 	friend std::ostream& operator<<(std::ostream &strm, const Configuration& conf);
-	virtual ~Configuration();
+	virtual ~Configuration() {};
 };
 
 std::ostream& operator<<(std::ostream &strm, const Configuration& conf);

@@ -2,13 +2,6 @@
 
 namespace NPPcore {
 
-Connection* Connection::instance = NULL;
-
-Connection* Connection::getInstance(uint16_t port) {
-	if(instance == NULL) instance = new Connection(port);
-	return instance;
-}
-
 Connection::Connection(uint16_t port) {
 	struct sockaddr_in saddr;
 	server_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
@@ -37,7 +30,6 @@ void Connection::listenAndServe(int max_connections){
 }
 
 void Connection::sigHandler(int sig){
-	delete instance;
 	util::die("Stopped", 0);
 }
 
@@ -50,23 +42,23 @@ void httpProcess(Socket act_sock){
 	HTTPRequest request = HTTPRequest();
 	HTTPResponse response = HTTPResponse(request, 200);
 	request.load(socket_pointer);
-	ModuleLoader* ml = ModuleLoader::getInstance();
+	ModuleLoader& ml = ModuleLoader::getInstance();
 	getPage_t getPage;
-	if(ml->hasModule(request.getRoute())) {
+	if(ml.hasModule(request.getRoute())) {
 		if(request.getRoute()[0] != '_'){
-			getPage = (getPage_t)ml->getMethod(request.getRoute(), "getPage");
+			getPage = (getPage_t)ml.getMethod(request.getRoute(), "getPage");
 			getPage(request, response);
 		} else {
 			response.setCode(403);
-			if(ml->hasModule("403")) {
-				getPage = (getPage_t)ml->getMethod("403", "getPage");
+			if(ml.hasModule("403")) {
+				getPage = (getPage_t)ml.getMethod("403", "getPage");
 				getPage(request, response);
 			}
 		}
 	} else {
 		response.setCode(404);
-		if(ml->hasModule("404")) {
-			getPage = (getPage_t)ml->getMethod("404", "getPage");
+		if(ml.hasModule("404")) {
+			getPage = (getPage_t)ml.getMethod("404", "getPage");
 			getPage(request, response);
 		}
 	}

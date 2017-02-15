@@ -2,8 +2,6 @@
 
 namespace NPPcore {
 
-const Configuration Configuration::self(CONF_FILE);
-
 Configuration::Configuration(const std::string& filename) {
 	std::ifstream fs;
 	std::string line, name, value;
@@ -35,7 +33,5 @@ std::ostream& operator<<(std::ostream &strm, const Configuration& conf) {
 	}
 	return strm;
 }
-
-Configuration::~Configuration() { }
 
 }  /* namespace NPPcore */

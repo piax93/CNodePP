@@ -26,12 +26,14 @@ void closeSocket(Socket sock);
 
 class Connection {
 private:
-	static Connection* instance;
 	Socket server_socket;
 	static void sigHandler(int sig);
 	Connection(uint16_t port);
 public:
-	static Connection* getInstance(uint16_t port);
+	static Connection& getInstance(uint16_t port){
+		static Connection instance(port);
+		return instance;
+	}
 	void listenAndServe(int max_connections);
 	virtual ~Connection();
 };

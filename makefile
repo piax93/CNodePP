@@ -45,9 +45,8 @@ $(DIRS):
 all_modules: $(MODOBJECTS)
 
 
-
 .SECONDEXPANSION:
-$(OBJECTS): $$(patsubst %.o,%.cpp,$$(patsubst $$(OBJECTSDIR)/%,$$(SOURCEDIR)/%,$$@)) | $(OBJECTSDIR)
+$(OBJECTS): $$(wildcard $$(patsubst $$(OBJECTSDIR)/%.o,$$(SOURCEDIR)/%,$$@).*) | $(OBJECTSDIR)
 	$(CC) $(CFLAGS) -c -I $(INCLUDEDIR) $(patsubst %.o,%.cpp,$(patsubst $(OBJECTSDIR)/%,$(SOURCEDIR)/%,$@)) -o $@ $(CLIBS)
 
 
