@@ -22,8 +22,9 @@ private:
 	REQUEST_TYPE requestType;
 	std::string version;
 	std::string route;
-	std::unordered_map<std::string, std::string> urlparams;
 	std::unordered_map<std::string, std::string> options;
+	std::unordered_map<std::string, std::string> urlparams;
+	std::unordered_map<std::string, std::string> postparams;
 public:
 	HTTPRequest() : requestType(GET) {}
 	void load(FILE* socket_pointer);
@@ -31,10 +32,13 @@ public:
 	std::string getRoute() const;
 	REQUEST_TYPE getType() const;
 	std::string getOption(const std::string& name) const;
+	std::string $GET(const std::string& key) const;
+	std::string $POST(const std::string& key) const;
 	friend std::ostream& operator<<(std::ostream &strm, const HTTPRequest& req);
 	virtual ~HTTPRequest() {}
 };
 
+void urlEncodedToMap(const std::string& data, std::unordered_map<std::string, std::string>& map);
 std::ostream& operator<<(std::ostream &strm, const HTTPRequest& req);
 
 } /* namespace NPPcore */

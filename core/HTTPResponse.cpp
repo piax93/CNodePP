@@ -8,7 +8,7 @@ const std::unordered_map<int,std::string> HTTPResponse::codes =
 HTTPResponse::HTTPResponse(HTTPRequest& _request, int code): request(_request) {
 	this->code = code;
 	bindCount = 0;
-	options["Content-Type"] = "text/html";
+	options["Content-Type"] = "text/html; charset=UTF-8";
 	options["Server"] = "NodePP";
 	body = "";
 }
@@ -38,19 +38,24 @@ void HTTPResponse::bindTemplate(const std::string& tplfilename, const std::unord
 	HTTPResponse dummy(request, 200);
 	int offset = 0;
 	std::string sub;
+	bool sub_set;
 	while(it != itend){
-		sub = "";
+		sub_set = false;
 		if(it->str()[1] == '%' && ml.hasModule(it->str(1))){
 			dummy.body = "";
 			dummy.bindCount = bindCount + 1;
 			dummy.options = options;
 			ml.getPage(it->str(1), request, dummy);
 			sub = dummy.getBody();
+			sub_set = true;
 		} else {
 			auto varvalue = variables.find(it->str(1));
-			if(varvalue != variables.end()) sub = varvalue->second;
+			if(varvalue != variables.end()) {
+				sub = varvalue->second;
+				sub_set = true;
+			}
 		}
-		if(sub.length() > 0){
+		if(sub_set){
 			body.replace(it->position() + offset, it->length(), sub);
 			offset += sub.length() - it->length();
 		}

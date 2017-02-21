@@ -19,7 +19,7 @@ TMPDIR=$(EXECUTABLEDIR)/tmp
 DIRS=$(EXECUTABLEDIR) $(OBJECTSDIR) $(MODDIR) $(TMPDIR)
 
 
-.PHONY: core debug all_modules run clean $(MODALIAS)
+.PHONY: core debug all_modules run clean_core clean $(MODALIAS)
 
 
 core: $(OBJECTS) | $(EXECUTABLEDIR)
@@ -37,6 +37,8 @@ run: core settings.conf
 clean:
 	rm -Rf $(EXECUTABLEDIR)
 
+clean_core:
+	rm -f $(EXECUTABLEDIR)/$(EXECUTABLE)
 
 $(DIRS):
 	mkdir -p $@

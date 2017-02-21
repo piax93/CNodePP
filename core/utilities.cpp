@@ -105,7 +105,7 @@ std::string urlDecode(const std::string &toDecode) {
 }
 
 /**
- * Check if string end with a certain suffix
+ * Check if string ends with a certain suffix
  * @param value String to check
  * @param ending Ending
  */
@@ -115,7 +115,17 @@ bool endsWith(const std::string& value, const std::string& ending) {
 }
 
 /**
- * Check if string end with a certain suffix
+ * Check if string starts with prefix
+ * @param value String to check
+ * @param prefix Prefix
+ */
+bool startsWith(const std::string& value, const std::string& prefix) {
+	if (prefix.size() > value.size()) return false;
+	return std::equal(prefix.begin(), prefix.end(), value.begin());
+}
+
+/**
+ * Check if string ends with a certain suffix
  * @param value String to check
  * @param ending Ending
  */
@@ -125,6 +135,21 @@ bool endsWith(const char* value, const std::string& ending) {
 	if (lene > lenv) return false;
 	for(size_t i = 1; i <= lene; i++) {
 		if(value[lenv-i] != ending[lene-i]) return false;
+	}
+	return true;
+}
+
+/**
+ * Check if string starts with prefix
+ * @param value String to check
+ * @param prefix Prefix
+ */
+bool startsWith(const char* value, const std::string& prefix) {
+	size_t lenv = strlen(value);
+	size_t lenp = prefix.length();
+	if (lenp > lenv) return false;
+	for(size_t i = 0; i < lenp; i++) {
+		if(value[i] != prefix[i]) return false;
 	}
 	return true;
 }
@@ -146,28 +171,13 @@ std::string removeExtension(const std::string& filename){
 }
 
 /**
- * Trim start of a string
- */
-std::string ltrim(const std::string& s) {
-	std::string res(s);
-	res.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
-	return res;
-}
-
-/**
- * Trim end of a string
- */
-std::string rtrim(const std::string& s) {
-	std::string res(s);
-	res.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
-	return res;
-}
-
-/**
  * Trim both ends of a string
  */
 std::string trim(const std::string& s) {
-	return ltrim(rtrim(s));
+	int start = -1, end = s.length();
+	while(start++ < end-1) if(s[start] != ' ' && s[start] != '\t' && s[start] != '\n' && s[start] != '\r') break;
+	while(end-- > start) if(s[end] != ' ' && s[end] != '\t' && s[end] != '\n' && s[end] != '\r') break;
+	return start <= end ? s.substr(start, end - start + 1) : "";
 }
 
 /**

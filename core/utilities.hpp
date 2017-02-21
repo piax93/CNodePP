@@ -19,15 +19,15 @@ namespace util {
 std::vector<std::string> splitString(const std::string& src, const std::string& delimiter);
 std::vector<std::string> splitString(char* src, char delimiter);
 bool endsWith(const std::string& value, const std::string& ending);
+bool startsWith(const std::string& value, const std::string& prefix);
 bool endsWith(const char* value, const std::string& ending);
+bool startsWith(const char* value, const std::string& prefix);
 std::string removeExtension(const char* filename);
 std::string removeExtension(const std::string& filename);
 void die(const std::string& message, int status=-1);
 std::string urlEncode(const std::string& toEncode);
 std::string urlDecode(const std::string &toDecode);
 std::string readFileToString(const std::string& filename);
-std::string ltrim(const std::string& s);
-std::string rtrim(const std::string& s);
 std::string trim(const std::string& s);
 
 }  /* namespace util */
