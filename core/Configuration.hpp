@@ -11,6 +11,7 @@
 
 #define CONF_DEFAULT_FILE "settings.conf"
 #define CONF_ASSIGN_SYMBOL '='
+#define CONF_COMMENT '#'
 
 namespace NPPcore {
 

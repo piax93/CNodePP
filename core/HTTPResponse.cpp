@@ -2,7 +2,8 @@
 
 namespace NPPcore {
 
-const std::unordered_map<int,std::string> HTTPResponse::codes = {{200, "OK"}, {403, "Forbidden"}, {404, "Not Found"}};
+const std::unordered_map<int,std::string> HTTPResponse::codes =
+	{{200, "OK"}, {403, "Forbidden"}, {404, "Not Found"}, {500, "Internal Server Error"}};
 
 HTTPResponse::HTTPResponse(HTTPRequest& _request, int code): request(_request) {
 	this->code = code;
@@ -22,30 +23,36 @@ void HTTPResponse::send(FILE* socket_pointer){
 	fflush(socket_pointer);
 }
 
-void HTTPResponse::bindTemplate(const std::string& tplname, const std::unordered_map<std::string, std::string>& variables) {
+void HTTPResponse::bindTemplate(const std::string& tplfilename, const std::unordered_map<std::string, std::string>& variables) {
 	if(bindCount > MAX_RECURSION) {
-		std::cerr << "Bind recursion stopped" << std::endl;
+		std::cerr << "BindTemplate recursion limit exceeded" << std::endl;
 		return;
 	}
 	Configuration& conf = Configuration::getInstance();
 	ModuleLoader& ml = ModuleLoader::getInstance();
-	std::string filename = conf.getValue("template_dir") + "/" + tplname + "." + conf.getValue("template_ext");
-	body = util::readFileToString(filename);
+	std::string templ = util::readFileToString(conf.getValue("template_dir") + "/" + tplfilename);
+	body = templ;
 	std::regex pattern("\\{[\\{\\%]\\s*([a-zA-Z0-9_]+)\\s*[\\}\\%]\\}");
-	std::regex_iterator<std::string::iterator> it(body.begin(), body.end(), pattern);
+	std::regex_iterator<std::string::iterator> it(templ.begin(), templ.end(), pattern);
 	std::regex_iterator<std::string::iterator> itend;
 	HTTPResponse dummy(request, 200);
+	int offset = 0;
+	std::string sub;
 	while(it != itend){
+		sub = "";
 		if(it->str()[1] == '%' && ml.hasModule(it->str(1))){
-			getPage_t getPage = (getPage_t) ml.getMethod(it->str(1), "getPage");
 			dummy.body = "";
-			dummy.bindCount = bindCount+1;
+			dummy.bindCount = bindCount + 1;
 			dummy.options = options;
-			getPage(request, dummy);
-			body.replace(it->position(), it->length(), dummy.getBody());
+			ml.getPage(it->str(1), request, dummy);
+			sub = dummy.getBody();
 		} else {
 			auto varvalue = variables.find(it->str(1));
-			if(varvalue != variables.end()) body.replace(it->position(), it->length(), varvalue->second);
+			if(varvalue != variables.end()) sub = varvalue->second;
+		}
+		if(sub.length() > 0){
+			body.replace(it->position() + offset, it->length(), sub);
+			offset += sub.length() - it->length();
 		}
 		it++;
 	}

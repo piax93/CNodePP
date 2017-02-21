@@ -87,6 +87,13 @@ void* ModuleLoader::getMethod(const std::string& modulename, const std::string& 
 	return method;
 }
 
+void ModuleLoader::getPage(const std::string& modulename, HTTPRequest& request, HTTPResponse& response){
+	if(hasModule(modulename)) {
+		getPage_t getPage = (getPage_t)getMethod(modulename, MOD_GETPAGE_METHOD);
+		getPage(request, response);
+	}
+}
+
 ModuleLoader::~ModuleLoader() {
 	for(auto it = modules.begin(); it != modules.end(); it++) dlclose(it->second);
 	online = false;

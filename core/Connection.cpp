@@ -33,7 +33,7 @@ void Connection::listenAndServe(){
 }
 
 void Connection::sigHandler(int sig){
-	util::die("Stopped", 0);
+	util::die("\rStopped", 0);
 }
 
 Connection::~Connection() {
@@ -46,31 +46,29 @@ void httpProcess(Socket act_sock){
 	request.load(socket_pointer);
 	HTTPResponse response(request, 200);
 	ModuleLoader& ml = ModuleLoader::getInstance();
-	getPage_t getPage;
-	if(ml.hasModule(request.getRoute())) {
-		if(request.getRoute()[0] != '_'){
-			getPage = (getPage_t)ml.getMethod(request.getRoute(), "getPage");
-			getPage(request, response);
-		} else {
-			response.setCode(403);
-			if(ml.hasModule("403")) {
-				getPage = (getPage_t)ml.getMethod("403", "getPage");
-				getPage(request, response);
+	try {
+		if(ml.hasModule(request.getRoute())) {
+			if(request.getRoute()[0] != '_'){
+				ml.getPage(request.getRoute(), request, response);
+			} else {
+				response.setCode(403);
+				ml.getPage("403", request, response);
 			}
+		} else {
+			response.setCode(404);
+			ml.getPage("404", request, response);
 		}
-	} else {
-		response.setCode(404);
-		if(ml.hasModule("404")) {
-			getPage = (getPage_t)ml.getMethod("404", "getPage");
-			getPage(request, response);
-		}
+	} catch(std::exception& e){
+		std::cerr << e.what() << std::endl;
+		response.setCode(500);
+		ml.getPage("500", request, response);
 	}
 	response.send(socket_pointer);
 	closeSocket(act_sock);
 }
 
 void closeSocket(Socket sock){
-	close(sock);
+	shutdown(sock, SHUT_RDWR);
 }
 
 } /* namespace NPPcore */

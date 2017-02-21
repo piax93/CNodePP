@@ -12,7 +12,7 @@
 #include <string>
 #include <regex>
 
-#define MAX_RECURSION 5
+#define MAX_RECURSION 20
 
 namespace NPPcore {
 

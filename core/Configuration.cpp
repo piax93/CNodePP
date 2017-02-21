@@ -9,8 +9,9 @@ Configuration::Configuration(const std::string& filename) {
 	std::string line, name, value;
 	fs.open(filename);
 	while(std::getline(fs, line)) {
+		if(line.length() == 0 || util::trim(line)[0] == CONF_COMMENT) continue;
 		size_t pos = line.find(CONF_ASSIGN_SYMBOL);
-		if(line.length() == 0 || pos == line.npos) continue;
+		if(pos == line.npos) continue;
 		name = line.substr(0, pos);
 		value = line.substr(pos+1, line.length()-pos-1);
 		values[util::trim(name)] = util::trim(value);

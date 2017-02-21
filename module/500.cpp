@@ -1,11 +1,12 @@
 #include "../core/HTTPResponse.hpp"
 #include "../core/HTTPRequest.hpp"
+#include <string>
 
 extern "C" {
 
 extern void getPage(NPPcore::HTTPRequest& request, NPPcore::HTTPResponse& response){
-	// response.setBody("You won't see me :D");
-  response.bindTemplate("test.html");
+	std::string body = "<h1>Internal Server Error</h1><p>Something went wrong pretty badly.</p>";
+	response.setBody(body);
 }
 
 }

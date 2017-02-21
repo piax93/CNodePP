@@ -2,7 +2,9 @@
 #define MODULELOADER_HPP_
 
 #include "Configuration.hpp"
+#include "HTTPResponse.hpp"
 #include "NodeppError.hpp"
+#include "HTTPRequest.hpp"
 #include "utilities.hpp"
 #include <unordered_map>
 #include <sys/inotify.h>
@@ -18,8 +20,11 @@
 #define EVENT_SIZE (sizeof (struct inotify_event))
 #define EVENT_BUF_LEN (128 * (EVENT_SIZE + 16))
 #define MOD_EXT ".so"
+#define MOD_GETPAGE_METHOD "getPage"
 
 namespace NPPcore {
+
+class HTTPResponse;
 
 class ModuleLoader {
 private:
@@ -44,6 +49,7 @@ public:
 	bool hasModule(const std::string& name) const;
 	void* getModule(const std::string& name) const;
 	void* getMethod(const std::string& modulename, const std::string& methodname) const;
+	void getPage(const std::string& modulename, HTTPRequest& request, HTTPResponse& response);
 	virtual ~ModuleLoader();
 };
 

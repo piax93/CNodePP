@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <stdio.h>
+#include <string>
 #include <thread>
 
 #define ADDR_SIZE sizeof(struct sockaddr_in)
