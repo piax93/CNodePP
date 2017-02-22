@@ -26,6 +26,8 @@ namespace NPPcore {
 
 class HTTPResponse;
 
+typedef void (*getPage_t)(HTTPRequest&, HTTPResponse&);
+
 class ModuleLoader {
 private:
 	bool online;

@@ -15,7 +15,7 @@ void HTTPRequest::load(FILE* socket_pointer){
 	else if(s[0] == "POST") requestType = POST;
 	else if(s[0] == "PUT") requestType = PUT;
 	else if(s[0] == "HEAD") requestType = HEAD;
-	else throw NodeppError("Unknow request method");
+	else throw NodeppUnsupported("Unknow request method");
 	s = util::splitString(s[1], "?");
 	if(s[0].length() <= 1) route = DEFAULT_ROUTE;
 	else route = util::urlDecode(s[0].substr(1));
@@ -91,6 +91,7 @@ void urlEncodedToMap(const std::string& data, std::unordered_map<std::string, st
 std::ostream& operator<<(std::ostream &strm, const HTTPRequest& req) {
 	std::string m[4] = {"GET", "HEAD", "POST", "PUT"};
 	strm << "Method -> " << m[req.requestType] << "\n";
+	strm << "Client -> " << req.clientip << "\n";
 	strm << "Route -> " << req.route << "\n";
 	std::unordered_map<std::string,std::string>::const_iterator it;
 	strm << "Get -> [";

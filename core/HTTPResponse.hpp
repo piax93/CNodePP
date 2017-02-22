@@ -31,16 +31,14 @@ public:
 	void setOption(const std::string& name, const std::string& value);
 	void setBody(const std::string& body);
 	void appendBody(const std::string& part);
-	void bindTemplate(const std::string& tplname);
-	void bindTemplate(const std::string& tplname, const std::unordered_map<std::string, std::string>& variables);
+	void bindTemplate(const std::string& tplname, bool statictpl = false);
+	void bindTemplate(const std::string& tplname, const std::unordered_map<std::string, std::string>& variables, bool statictpl = false);
 	int getCode() const;
 	std::string getOption(const std::string& name) const;
 	std::string getBody() const;
 	friend std::ostream& operator<<(std::ostream &strm, const HTTPResponse& resp);
 	virtual ~HTTPResponse();
 };
-
-typedef void (*getPage_t)(HTTPRequest&, HTTPResponse&);
 
 std::ostream& operator<<(std::ostream &strm, const HTTPResponse& resp);
 

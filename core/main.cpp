@@ -8,6 +8,9 @@ int main(int argc, char **argv) {
 
 	NPPcore::Connection connection;
 	connection.listenAndServe();
+	connection.waitAndBleed();
+
+	std::cerr << " -- Terminated -- " << std::endl;
 
 	return 0;
 }

@@ -4,6 +4,8 @@
 #include "NodeppError.hpp"
 #include "utilities.hpp"
 #include <unordered_map>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <iostream>
 #include <string.h>
 #include <string>
@@ -22,11 +24,12 @@ private:
 	REQUEST_TYPE requestType;
 	std::string version;
 	std::string route;
+	std::string clientip;
 	std::unordered_map<std::string, std::string> options;
 	std::unordered_map<std::string, std::string> urlparams;
 	std::unordered_map<std::string, std::string> postparams;
 public:
-	HTTPRequest() : requestType(GET) {}
+	HTTPRequest(struct sockaddr_in client): requestType(GET), clientip(inet_ntoa(client.sin_addr)) {}
 	void load(FILE* socket_pointer);
 	std::string getVersion() const;
 	std::string getRoute() const;

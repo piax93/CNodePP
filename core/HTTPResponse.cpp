@@ -2,8 +2,13 @@
 
 namespace NPPcore {
 
-const std::unordered_map<int,std::string> HTTPResponse::codes =
-	{{200, "OK"}, {403, "Forbidden"}, {404, "Not Found"}, {500, "Internal Server Error"}};
+const std::unordered_map<int,std::string> HTTPResponse::codes = {
+		{200, "OK"},
+		{403, "Forbidden"},
+		{404, "Not Found"},
+		{500, "Internal Server Error"},
+		{501, "Not Implemented"}
+};
 
 HTTPResponse::HTTPResponse(HTTPRequest& _request, int code): request(_request) {
 	this->code = code;
@@ -23,7 +28,8 @@ void HTTPResponse::send(FILE* socket_pointer){
 	fflush(socket_pointer);
 }
 
-void HTTPResponse::bindTemplate(const std::string& tplfilename, const std::unordered_map<std::string, std::string>& variables) {
+void HTTPResponse::bindTemplate(const std::string& tplfilename,
+		const std::unordered_map<std::string, std::string>& variables, bool statictpl) {
 	if(bindCount > MAX_RECURSION) {
 		std::cerr << "BindTemplate recursion limit exceeded" << std::endl;
 		return;
@@ -32,6 +38,7 @@ void HTTPResponse::bindTemplate(const std::string& tplfilename, const std::unord
 	ModuleLoader& ml = ModuleLoader::getInstance();
 	std::string templ = util::readFileToString(conf.getValue("template_dir") + "/" + tplfilename);
 	body = templ;
+	if(statictpl) return;
 	std::regex pattern("\\{[\\{\\%]\\s*([a-zA-Z0-9_]+)\\s*[\\}\\%]\\}");
 	std::regex_iterator<std::string::iterator> it(templ.begin(), templ.end(), pattern);
 	std::regex_iterator<std::string::iterator> itend;
@@ -63,8 +70,8 @@ void HTTPResponse::bindTemplate(const std::string& tplfilename, const std::unord
 	}
 }
 
-void HTTPResponse::bindTemplate(const std::string& tplname) {
-	bindTemplate(tplname, std::unordered_map<std::string,std::string>());
+void HTTPResponse::bindTemplate(const std::string& tplname, bool statictpl) {
+	bindTemplate(tplname, std::unordered_map<std::string,std::string>(), statictpl);
 }
 
 void HTTPResponse::setCode(int code) {

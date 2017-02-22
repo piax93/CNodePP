@@ -40,6 +40,9 @@ clean:
 clean_core:
 	rm -f $(EXECUTABLEDIR)/$(EXECUTABLE)
 
+clean_modules:
+	rm -Rf $(MODDIR)
+
 $(DIRS):
 	mkdir -p $@
 

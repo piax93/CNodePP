@@ -104,6 +104,7 @@ ModuleLoader::~ModuleLoader() {
 	ofs.close();
 	remove(dummy.c_str());
 	watcher.join();
+	std::cerr << "ModuleLoader freed" << std::endl;
 }
 
 } /* namespace NPPcore */
