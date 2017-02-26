@@ -1,13 +1,7 @@
-#include "utilities.hpp"
+#include "strutils.hpp"
 
 namespace util {
 
-/**
- * Split string into tokens
- * @param src String to split
- * @param delimiter Delimiter string
- * @return Array of tokens
- */
 std::vector<std::string> splitString(const std::string& src, const std::string& delimiter){
 	std::vector<std::string> res;
 	std::string tmp(src);
@@ -24,12 +18,7 @@ std::vector<std::string> splitString(const std::string& src, const std::string& 
 	return res;
 }
 
-/**
- * Split string into tokens
- * @param src String to split
- * @param delimiter Delimiter character
- * @return Array of tokens
- */
+
 std::vector<std::string> splitString(char* src, char delimiter){
 	std::vector<std::string> res;
 	char* pos;
@@ -48,6 +37,7 @@ std::vector<std::string> splitString(char* src, char delimiter){
 	return res;
 }
 
+
 std::string charToHex(unsigned char c) {
 	short i = c;
 	std::stringstream s;
@@ -64,9 +54,6 @@ unsigned char hexToChar(const std::string &str) {
 	return (unsigned char) c;
 }
 
-/**
- * Encode string using URL notations
- */
 std::string urlEncode(const std::string& toEncode) {
 	std::ostringstream out;
 	for(std::string::size_type i=0; i < toEncode.length(); ++i) {
@@ -87,9 +74,6 @@ std::string urlEncode(const std::string& toEncode) {
 	return out.str();
 }
 
-/**
- * Decode URL-Encoded string
- */
 std::string urlDecode(const std::string &toDecode) {
 	std::ostringstream out;
 	for(std::string::size_type i=0; i < toDecode.length(); ++i) {
@@ -104,31 +88,17 @@ std::string urlDecode(const std::string &toDecode) {
 	return out.str();
 }
 
-/**
- * Check if string ends with a certain suffix
- * @param value String to check
- * @param ending Ending
- */
+
 bool endsWith(const std::string& value, const std::string& ending) {
 	if (ending.size() > value.size()) return false;
 	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
-/**
- * Check if string starts with prefix
- * @param value String to check
- * @param prefix Prefix
- */
 bool startsWith(const std::string& value, const std::string& prefix) {
 	if (prefix.size() > value.size()) return false;
 	return std::equal(prefix.begin(), prefix.end(), value.begin());
 }
 
-/**
- * Check if string ends with a certain suffix
- * @param value String to check
- * @param ending Ending
- */
 bool endsWith(const char* value, const std::string& ending) {
 	size_t lenv = strlen(value);
 	size_t lene = ending.length();
@@ -139,11 +109,6 @@ bool endsWith(const char* value, const std::string& ending) {
 	return true;
 }
 
-/**
- * Check if string starts with prefix
- * @param value String to check
- * @param prefix Prefix
- */
 bool startsWith(const char* value, const std::string& prefix) {
 	size_t lenv = strlen(value);
 	size_t lenp = prefix.length();
@@ -154,25 +119,18 @@ bool startsWith(const char* value, const std::string& prefix) {
 	return true;
 }
 
-/**
- * Remove extension from filename
- */
+
 std::string removeExtension(const char* filename){
 	const char* dot = strrchr(filename, '.');
 	return std::string(filename, dot-filename);
 }
 
-/**
- * Remove extension from filename
- */
 std::string removeExtension(const std::string& filename){
 	size_t pos = filename.find_last_of('.');
 	return filename.substr(0, pos);
 }
 
-/**
- * Trim both ends of a string
- */
+
 std::string trim(const std::string& s) {
 	int start = -1, end = s.length();
 	while(start++ < end-1) if(s[start] != ' ' && s[start] != '\t' && s[start] != '\n' && s[start] != '\r') break;
@@ -180,28 +138,19 @@ std::string trim(const std::string& s) {
 	return start <= end ? s.substr(start, end - start + 1) : "";
 }
 
-/**
- * Store a complete text file in a string
- * @param filename File path
- * @return String containing file content
- */
+
 std::string readFileToString(const std::string& filename){
-	std::ifstream ifs(filename.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
-	std::ifstream::pos_type fileSize = ifs.tellg();
-	ifs.seekg(0, std::ios::beg);
-	std::vector<char> bytes(fileSize);
-	ifs.read(&bytes[0], fileSize);
-	return std::string(&bytes[0], fileSize);
+	try {
+		std::ifstream ifs(filename.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
+		std::ifstream::pos_type fileSize = ifs.tellg();
+		ifs.seekg(0, std::ios::beg);
+		std::vector<char> bytes(fileSize);
+		ifs.read(&bytes[0], fileSize);
+		return std::string(&bytes[0], fileSize);
+	} catch (std::exception& e) {
+		throw NPPcore::NodeppError("Cannot read file " + filename);
+	}
 }
 
-/**
- * Terminate the program displaying an error message
- * @param message Message to display
- * @param status Exit status
- */
-void die(const std::string& message, int status){
-	std::cerr << message << std::endl;
-	std::exit(status);
-}
 
 }  /* namespace util */

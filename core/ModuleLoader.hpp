@@ -5,9 +5,9 @@
 #include "HTTPResponse.hpp"
 #include "NodeppError.hpp"
 #include "HTTPRequest.hpp"
-#include "utilities.hpp"
 #include <unordered_map>
 #include <sys/inotify.h>
+#include "strutils.hpp"
 #include <sys/types.h>
 #include <iostream>
 #include <unistd.h>

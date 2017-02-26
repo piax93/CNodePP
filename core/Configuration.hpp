@@ -2,7 +2,7 @@
 #define CONFIGURATION_HPP_
 
 #include "NodeppError.hpp"
-#include "utilities.hpp"
+#include "strutils.hpp"
 #include <unordered_map>
 #include <exception>
 #include <iostream>

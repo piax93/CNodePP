@@ -2,6 +2,7 @@
 #define NODEPPERROR_HPP_
 
 #include <exception>
+#include <iostream>
 #include <string>
 
 namespace NPPcore {
@@ -25,6 +26,16 @@ public:
 		return message_.c_str();
 	}
 };
+
+/**
+ * Terminate the program displaying an error message
+ * @param message Message to display
+ * @param status Exit status
+ */
+inline void die(const std::string& message, int status=-1){
+	std::cerr << message << std::endl;
+	std::exit(status);
+}
 
 } /* namespace NPPcore */
 

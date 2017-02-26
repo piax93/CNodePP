@@ -5,8 +5,8 @@
 #include "ModuleLoader.hpp"
 #include "NodeppError.hpp"
 #include "HTTPRequest.hpp"
-#include "utilities.hpp"
 #include <unordered_map>
+#include "strutils.hpp"
 #include <iostream>
 #include <stdio.h>
 #include <string>

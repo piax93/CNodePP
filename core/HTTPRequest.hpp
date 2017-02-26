@@ -2,9 +2,9 @@
 #define HTTPREQUEST_HPP_
 
 #include "NodeppError.hpp"
-#include "utilities.hpp"
 #include <unordered_map>
 #include <netinet/in.h>
+#include "strutils.hpp"
 #include <arpa/inet.h>
 #include <iostream>
 #include <string.h>
