@@ -27,6 +27,16 @@ public:
 	}
 };
 
+class NodeppNotFound: public std::exception {
+private:
+	std::string message_;
+public:
+	NodeppNotFound(const std::string& message) : message_(message) {}
+	virtual const char* what() const throw() {
+		return message_.c_str();
+	}
+};
+
 /**
  * Terminate the program displaying an error message
  * @param message Message to display

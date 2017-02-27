@@ -10,22 +10,40 @@ const std::unordered_map<int,std::string> HTTPResponse::codes = {
 		{501, "Not Implemented"}
 };
 
-HTTPResponse::HTTPResponse(HTTPRequest& _request, int code): request(_request) {
-	this->code = code;
-	bindCount = 0;
+HTTPResponse::HTTPResponse(HTTPRequest& _request, int _code): code(_code), request(_request),
+		bindCount(0), body(""), staticFilename("") {
 	options["Content-Type"] = "text/html; charset=UTF-8";
 	options["Server"] = "NodePP";
-	body = "";
 }
 
-void HTTPResponse::send(FILE* socket_pointer){
+void HTTPResponse::send(int socketfd){
+	FILE* socket_pointer = fdopen(socketfd, "w");
+	bool isStaticFile = staticFilename.length() > 0;
 	fprintf(socket_pointer, "%s %d %s\r\n", request.getVersion().c_str(), code, codes.find(code)->second.c_str());
-	options["Content-Length"] = std::to_string(body.length());
+	options["Content-Length"] = std::to_string(isStaticFile ? util::getFileSize(staticFilename) : body.length());
+	if(isStaticFile) options["Content-Type"] = util::getMimeType(staticFilename);
 	for(auto it = options.begin(); it != options.end(); it++)
 		fprintf(socket_pointer, "%s:%s\r\n", it->first.c_str(), it->second.c_str());
 	fputs("\r\n", socket_pointer);
-	fputs(body.c_str(), socket_pointer);
 	fflush(socket_pointer);
+	if(isStaticFile) util::sendFile(socketfd, staticFilename);
+	else fputs(body.c_str(), socket_pointer);
+	fflush(socket_pointer);
+}
+
+void HTTPResponse::setStaticFile(const std::string& fileroute){
+	std::string staticdir = Configuration::getInstance().getValue("static_dir");
+	std::string filename = fileroute.substr(strlen(STATIC_KEYWORD));
+	if(filename.length() == 0) {
+		body = "AHAH! Sorry, I won't give you any directory listing.";
+		return;
+	}
+	staticFilename = staticdir + "/" + filename;
+	if(!util::startsWith(realpath(staticFilename.c_str(), NULL), realpath(staticdir.c_str(), NULL))
+			|| !util::isRegularFile(staticFilename)) {
+		staticFilename = "";
+		throw NodeppNotFound("Directory traversal tentative or invalid path");
+	}
 }
 
 void HTTPResponse::bindTemplate(const std::string& tplfilename,

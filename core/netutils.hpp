@@ -3,9 +3,11 @@
 
 #include "NodeppError.hpp"
 #include <netinet/in.h>
+#include <sys/stat.h>
 #include <iostream>
 #include <unistd.h>
 #include <fcntl.h>
+#include <magic.h>
 
 #define ADDR_SIZE sizeof(struct sockaddr_in)
 #define BUFF_LEN 4096
@@ -45,6 +47,23 @@ size_t recvn(Socket fd, const char* vptr, size_t n);
  * @param filename Path to file
  */
 void sendFile(Socket socket, const std::string& filename);
+
+/**
+ * Get MIME type of a file
+ * @param filename Filepath
+ */
+std::string getMimeType(const std::string& filename);
+
+/**
+ * Get the size of a file in bytes
+ * @param filename Filepath
+ */
+size_t getFileSize(const std::string& filename);
+
+/**
+ * Check if path points to regular file
+ */
+bool isRegularFile(const std::string& filename);
 
 /**
  * Safely close socket file descriptor

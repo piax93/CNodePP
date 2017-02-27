@@ -7,10 +7,10 @@ Have you ever dreamed of creating your own HTTP server from scratch? Me neither,
 * 0.01% of the HTTP standard (just enough to answer GET requests).
 * Template parsing to insert submodules and variables in html files.
 * Worker threads are "preforked" to limit the maximum number of concurrent requests.
+* Interface to GET static resources.
 
 #### What would be cool to get done
 * Complete HTTP specifications (at least the most important features).
-* Interface to GET static resources.
 * Add compression library.
 * Add SSL compatibility.
 * Make it more configurable by adding more parameters to the settings.

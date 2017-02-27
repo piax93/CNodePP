@@ -35,6 +35,31 @@ void sendFile(Socket socket, const std::string& filename){
 }
 
 
+static magic_t magic_database_pointer = NULL;
+
+std::string getMimeType(const std::string& filename) {
+	if(magic_database_pointer == NULL) {
+		magic_database_pointer = magic_open(MAGIC_MIME_TYPE);
+		if(magic_database_pointer == NULL || magic_load(magic_database_pointer, NULL) < 0)
+			return "application/octet-stream";
+		std::atexit([]{ magic_close(magic_database_pointer); std::cerr << "Freed libmagic database" << std::endl; });
+	}
+	return std::string(magic_file(magic_database_pointer, filename.c_str()));
+}
+
+
+size_t getFileSize(const std::string& filename){
+	struct stat st;
+	if(stat(filename.c_str(), &st)) throw NPPcore::NodeppError("Cannot read file stats");
+	return st.st_size;
+}
+
+bool isRegularFile(const std::string& filename){
+	struct stat st;
+	if(stat(filename.c_str(), &st)) throw NPPcore::NodeppError("Cannot read file stats");
+	return S_ISREG(st.st_mode);
+}
+
 size_t sendn(Socket fd, const char* vptr, size_t n) {
 	size_t nwritten, nleft = n;
 	const char* ptr = vptr;

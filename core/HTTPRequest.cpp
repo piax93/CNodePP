@@ -2,7 +2,8 @@
 
 namespace NPPcore {
 
-void HTTPRequest::load(FILE* socket_pointer){
+void HTTPRequest::load(int socketfd){
+	FILE* socket_pointer = fdopen(socketfd, "r");
 	size_t byteread, len = MAX_OPTION_LEN;
 	char* linebuffer = (char*) malloc(MAX_OPTION_LEN);
 
@@ -16,6 +17,7 @@ void HTTPRequest::load(FILE* socket_pointer){
 	else if(s[0] == "PUT") requestType = PUT;
 	else if(s[0] == "HEAD") requestType = HEAD;
 	else throw NodeppUnsupported("Unknow request method");
+	if(s[1][0] != '/') throw NodeppUnsupported("Incorrect route");
 	s = util::splitString(s[1], "?");
 	if(s[0].length() <= 1) route = DEFAULT_ROUTE;
 	else route = util::urlDecode(s[0].substr(1));
@@ -47,6 +49,10 @@ void HTTPRequest::load(FILE* socket_pointer){
 	}
 
 	free(linebuffer);
+}
+
+bool HTTPRequest::isStatic() const {
+	return util::startsWith(route, STATIC_KEYWORD);
 }
 
 std::string HTTPRequest::getVersion() const {

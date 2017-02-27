@@ -7,6 +7,7 @@
 #include "HTTPRequest.hpp"
 #include <unordered_map>
 #include "strutils.hpp"
+#include "netutils.hpp"
 #include <iostream>
 #include <stdio.h>
 #include <string>
@@ -19,16 +20,18 @@ namespace NPPcore {
 class HTTPResponse {
 private:
 	int code;
-	std::string body;
-	size_t bindCount;
 	HTTPRequest& request;
+	size_t bindCount;
+	std::string body;
+	std::string staticFilename;
 	std::unordered_map<std::string,std::string> options;
 public:
 	const static std::unordered_map<int,std::string> codes;
 	HTTPResponse(HTTPRequest& request, int code);
-	void send(FILE* socket_pointer);
+	void send(int socketfd);
 	void setCode(int code);
 	void setOption(const std::string& name, const std::string& value);
+	void setStaticFile(const std::string& fileroute);
 	void setBody(const std::string& body);
 	void appendBody(const std::string& part);
 	void bindTemplate(const std::string& tplname, bool statictpl = false);

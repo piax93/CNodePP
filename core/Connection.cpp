@@ -34,31 +34,34 @@ void Connection::listenAndServe(bool dofork){
 }
 
 void Connection::httpProcess(Socket act_sock, struct sockaddr_in clientaddress){
-	FILE* socket_pointer = fdopen(act_sock, "r+");
 	HTTPRequest request(clientaddress);
-	request.load(socket_pointer);
+	request.load(act_sock);
 	HTTPResponse response(request, 200);
 	ModuleLoader& ml = ModuleLoader::getInstance();
 	try {
-		if(ml.hasModule(request.getRoute())) {
+		if(request.isStatic()) {
+			response.setStaticFile(request.getRoute());
+		} else if(ml.hasModule(request.getRoute())) {
 			if(request.getRoute()[0] != '_'){
 				ml.getPage(request.getRoute(), request, response);
 			} else {
 				response.setCode(403);
 				ml.getPage("403", request, response);
 			}
-		} else {
-			response.setCode(404);
-			ml.getPage("404", request, response);
-		}
+		} else throw NodeppNotFound("Module not found");
 	} catch (NodeppUnsupported& e) {
+		std::cerr << e.what() << std::endl;
 		response.setCode(501);
+	} catch (NodeppNotFound& e) {
+		std::cerr << e.what() << std::endl;
+		response.setCode(404);
+		ml.getPage("404", request, response);
 	} catch(std::exception& e){
 		std::cerr << e.what() << std::endl;
 		response.setCode(500);
 		ml.getPage("500", request, response);
 	}
-	response.send(socket_pointer);
+	response.send(act_sock);
 	util::closeSocket(act_sock);
 }
 

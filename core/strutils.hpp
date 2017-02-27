@@ -49,14 +49,14 @@ bool startsWith(const std::string& value, const std::string& prefix);
  * @param value Char array to check
  * @param ending Ending
  */
-bool endsWith(const char* value, const std::string& ending);
+bool endsWith(const char* value, const char* ending);
 
 /**
  * Check if string starts with prefix
  * @param value Char array to check
  * @param prefix Prefix
  */
-bool startsWith(const char* value, const std::string& prefix);
+bool startsWith(const char* value, const char* prefix);
 
 /**
  * Remove extension from filename

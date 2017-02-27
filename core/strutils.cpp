@@ -99,9 +99,10 @@ bool startsWith(const std::string& value, const std::string& prefix) {
 	return std::equal(prefix.begin(), prefix.end(), value.begin());
 }
 
-bool endsWith(const char* value, const std::string& ending) {
+bool endsWith(const char* value, const char* ending) {
+	if(value == NULL || ending == NULL) return false;
 	size_t lenv = strlen(value);
-	size_t lene = ending.length();
+	size_t lene = strlen(ending);
 	if (lene > lenv) return false;
 	for(size_t i = 1; i <= lene; i++) {
 		if(value[lenv-i] != ending[lene-i]) return false;
@@ -109,9 +110,10 @@ bool endsWith(const char* value, const std::string& ending) {
 	return true;
 }
 
-bool startsWith(const char* value, const std::string& prefix) {
+bool startsWith(const char* value, const char* prefix) {
+	if(value == NULL || prefix == NULL) return false;
 	size_t lenv = strlen(value);
-	size_t lenp = prefix.length();
+	size_t lenp = strlen(prefix);
 	if (lenp > lenv) return false;
 	for(size_t i = 0; i < lenp; i++) {
 		if(value[i] != prefix[i]) return false;

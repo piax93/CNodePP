@@ -12,6 +12,7 @@
 
 #define MAX_OPTION_LEN 8192
 #define DEFAULT_ROUTE "index"
+#define STATIC_KEYWORD "static/"
 
 namespace NPPcore {
 
@@ -30,10 +31,11 @@ private:
 	std::unordered_map<std::string, std::string> postparams;
 public:
 	HTTPRequest(struct sockaddr_in client): requestType(GET), clientip(inet_ntoa(client.sin_addr)) {}
-	void load(FILE* socket_pointer);
+	void load(int socketfd);
 	std::string getVersion() const;
 	std::string getRoute() const;
 	REQUEST_TYPE getType() const;
+	bool isStatic() const;
 	std::string getOption(const std::string& name) const;
 	std::string $GET(const std::string& key) const;
 	std::string $POST(const std::string& key) const;
