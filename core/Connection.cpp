@@ -35,10 +35,10 @@ void Connection::listenAndServe(bool dofork){
 
 void Connection::httpProcess(Socket act_sock, struct sockaddr_in clientaddress){
 	HTTPRequest request(clientaddress);
-	request.load(act_sock);
 	HTTPResponse response(request, 200);
 	ModuleLoader& ml = ModuleLoader::getInstance();
 	try {
+		request.load(act_sock);
 		if(request.isStatic()) {
 			response.setStaticFile(request.getRoute());
 		} else if(ml.hasModule(request.getRoute())) {
@@ -48,7 +48,7 @@ void Connection::httpProcess(Socket act_sock, struct sockaddr_in clientaddress){
 				response.setCode(403);
 				ml.getPage("403", request, response);
 			}
-		} else throw NodeppNotFound("Module not found");
+		} else throw NodeppNotFound("Module not found " + request.getRoute());
 	} catch (NodeppUnsupported& e) {
 		std::cerr << e.what() << std::endl;
 		response.setCode(501);

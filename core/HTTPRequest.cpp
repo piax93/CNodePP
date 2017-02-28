@@ -3,14 +3,14 @@
 namespace NPPcore {
 
 void HTTPRequest::load(int socketfd){
-	FILE* socket_pointer = fdopen(socketfd, "r");
-	size_t byteread, len = MAX_OPTION_LEN;
-	char* linebuffer = (char*) malloc(MAX_OPTION_LEN);
+	ssize_t byteread;
+	std::vector<char> linebuffer(MAX_OPTION_LEN + 1);
+	char* linebufferpointer = linebuffer.data();
 
 	// Method, query, version
-	byteread = getline(&linebuffer, &len, socket_pointer);
+	byteread = util::netgetline(socketfd, linebufferpointer, MAX_OPTION_LEN);
 	linebuffer[byteread-2] = '\0';
-	std::vector<std::string> s = util::splitString(linebuffer, ' ');
+	std::vector<std::string> s = util::splitString(linebufferpointer, ' ');
 	version = s[2];
 	if(s[0] == "GET") requestType = GET;
 	else if(s[0] == "POST") requestType = POST;
@@ -25,30 +25,37 @@ void HTTPRequest::load(int socketfd){
 
 	// Options
 	char* colon;
-	while(true){
-		byteread = getline(&linebuffer, &len, socket_pointer);
-		if(strcmp(linebuffer, "\r\n") == 0) break;
+	while(true) {
+		byteread = util::netgetline(socketfd, linebufferpointer, MAX_OPTION_LEN);
+		if(strcmp(linebufferpointer, "\r\n") == 0) break;
 		linebuffer[byteread-2] = '\0';
-		colon = strchr(linebuffer, ':');
+		colon = strchr(linebufferpointer, ':');
 		if(colon == NULL) continue;
 		*colon = '\0';
-		options[std::string(linebuffer)] = util::trim(std::string(colon+1));
+		options[std::string(linebufferpointer)] = util::trim(std::string(colon+1));
 	}
 
 	// POST contents
 	if(requestType == POST) {
+		size_t postlen = std::stoi(options.find("Content-Length")->second);
 		if(util::startsWith(options.find("Content-Type")->second, "application/x-www-form-urlencoded")){
-			size_t postlen = std::stoi(options.find("Content-Length")->second);
-			if(postlen > len-1) linebuffer = (char*) realloc(linebuffer, postlen+1);
-			byteread = fread(linebuffer, 1, postlen, socket_pointer);
+			if(postlen > MAX_OPTION_LEN - 1) linebuffer.resize(postlen + 1);
+			byteread = util::recvn(socketfd, linebuffer.data(), postlen);
+			// byteread = fread(linebuffer.data(), 1, postlen, socket_pointer);
+			if(byteread < (ssize_t)postlen) throw NodeppError("Badly formatted POST request");
 			linebuffer[byteread] = '\0';
-			urlEncodedToMap(std::string(linebuffer), postparams);
+			urlEncodedToMap(std::string(linebuffer.data()), postparams);
 		} else if(util::startsWith(options.find("Content-Type")->second, "multipart/form-data")){
-			// TODO
+			std::smatch boundary;
+			std::regex bmatcher("multipart/form-data\\s*;\\s*boundary=(.*)$");
+			if(std::regex_match(options.find("Content-Type")->second, boundary, bmatcher)) {
+				std::cerr << "multipart in development..." << std::endl;
+				std::cerr << "boundary: " << boundary.str(1) << std::endl;
+				// TODO
+			}
 		}
 	}
 
-	free(linebuffer);
 }
 
 bool HTTPRequest::isStatic() const {

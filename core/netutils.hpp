@@ -28,18 +28,27 @@ Socket createServerSocket(u_int16_t port, uint16_t max_connection_queue);
  * @param fd Socket file descriptor
  * @param vptr Pointer to buffer
  * @param n Buffer size
- * @return Sent bytes
+ * @return Sent bytes, -1 on error
  */
-size_t sendn(Socket fd, const char* vptr, size_t n);
+ssize_t sendn(Socket fd, const char* vptr, size_t n);
 
 /**
  * Receive n bytes
  * @param fd Socket file descriptor
  * @param vptr Pointer to buffer
  * @param n Buffer size
- * @return Bytes read
+ * @return Bytes read, -1 on error
  */
-size_t recvn(Socket fd, const char* vptr, size_t n);
+ssize_t recvn(Socket fd, char* vptr, size_t n);
+
+/**
+ * Read a line from filedescriptor
+ * @param fd Socket file descriptor
+ * @param vptr Pointer to allocated buffer
+ * @param maxlen Buffer size
+ * @return Bytes read, -1 on error
+ */
+ssize_t netgetline(Socket fd, char* vptr, size_t maxlen);
 
 /**
  * Send file over TCP socket

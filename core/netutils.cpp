@@ -22,7 +22,7 @@ void sendFile(Socket socket, const std::string& filename){
 	char buffer[BUFF_LEN];
 	int input_file = open(filename.c_str(), O_RDONLY);
 	if(input_file < 0) throw NPPcore::NodeppError("Could not open file " + filename);
-	size_t bytes_read;
+	ssize_t bytes_read;
 
 	while (1) {
 	    bytes_read = read(input_file, buffer, BUFF_LEN);
@@ -60,8 +60,9 @@ bool isRegularFile(const std::string& filename){
 	return S_ISREG(st.st_mode);
 }
 
-size_t sendn(Socket fd, const char* vptr, size_t n) {
-	size_t nwritten, nleft = n;
+ssize_t sendn(Socket fd, const char* vptr, size_t n) {
+	ssize_t nwritten;
+	size_t nleft = n;
 	const char* ptr = vptr;
 	while (nleft > 0) {
 		if ((nwritten = send(fd, ptr, nleft, 0)) <= 0) return -1;
@@ -72,8 +73,9 @@ size_t sendn(Socket fd, const char* vptr, size_t n) {
 }
 
 
-size_t recvn(Socket fd, char* vptr, size_t n) {
-	size_t nread, nleft = n;
+ssize_t recvn(Socket fd, char* vptr, size_t n) {
+	ssize_t nread;
+	size_t nleft = n;
 	char* ptr = vptr;
 	while (nleft > 0) {
 		if ((nread = recv(fd, ptr, nleft, 0)) < 0) return -1;
@@ -82,6 +84,27 @@ size_t recvn(Socket fd, char* vptr, size_t n) {
 		ptr += nread;
 	}
 	return n - nleft;
+}
+
+
+ssize_t netgetline(Socket fd, char* vptr, size_t maxlen) {
+	char* ptr = vptr;
+	ssize_t rc;
+	size_t n;
+	char c;
+	for(n = 1; n < maxlen; n++) {
+		if((rc = recv(fd, &c, 1, 0)) == 1) {
+			*ptr++ = c;
+			if (c == '\n') break;
+		} else if (rc == 0) {
+			if (n == 1) return 0;
+			else break;
+		} else {
+			return -1;
+		}
+	}
+	*ptr = '\0';
+	return n;
 }
 
 

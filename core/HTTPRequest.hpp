@@ -5,10 +5,13 @@
 #include <unordered_map>
 #include <netinet/in.h>
 #include "strutils.hpp"
+#include "netutils.hpp"
 #include <arpa/inet.h>
 #include <iostream>
 #include <string.h>
 #include <string>
+#include <array>
+#include <regex>
 
 #define MAX_OPTION_LEN 8192
 #define DEFAULT_ROUTE "index"

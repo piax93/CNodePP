@@ -17,18 +17,19 @@ HTTPResponse::HTTPResponse(HTTPRequest& _request, int _code): code(_code), reque
 }
 
 void HTTPResponse::send(int socketfd){
-	FILE* socket_pointer = fdopen(socketfd, "w");
 	bool isStaticFile = staticFilename.length() > 0;
-	fprintf(socket_pointer, "%s %d %s\r\n", request.getVersion().c_str(), code, codes.find(code)->second.c_str());
+	char responseLine[MAX_RESPONSE_LINE];
+	sprintf(responseLine, "%s %d %s\r\n", request.getVersion().c_str(), code, codes.find(code)->second.c_str());
+	util::sendn(socketfd, responseLine, strlen(responseLine));
 	options["Content-Length"] = std::to_string(isStaticFile ? util::getFileSize(staticFilename) : body.length());
 	if(isStaticFile) options["Content-Type"] = util::getMimeType(staticFilename);
-	for(auto it = options.begin(); it != options.end(); it++)
-		fprintf(socket_pointer, "%s:%s\r\n", it->first.c_str(), it->second.c_str());
-	fputs("\r\n", socket_pointer);
-	fflush(socket_pointer);
+	for(auto it = options.begin(); it != options.end(); it++) {
+		sprintf(responseLine, "%s: %s\r\n", it->first.c_str(), it->second.c_str());
+		util::sendn(socketfd, responseLine, strlen(responseLine));
+	}
+	util::sendn(socketfd, "\r\n", 2);
 	if(isStaticFile) util::sendFile(socketfd, staticFilename);
-	else fputs(body.c_str(), socket_pointer);
-	fflush(socket_pointer);
+	else util::sendn(socketfd, body.c_str(), body.size());
 }
 
 void HTTPResponse::setStaticFile(const std::string& fileroute){

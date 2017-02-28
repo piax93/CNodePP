@@ -14,6 +14,7 @@
 #include <regex>
 
 #define MAX_RECURSION 20
+#define MAX_RESPONSE_LINE 8192
 
 namespace NPPcore {
 
