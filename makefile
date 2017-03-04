@@ -52,7 +52,7 @@ all_modules: $(MODOBJECTS)
 
 .SECONDEXPANSION:
 $(OBJECTS): $$(wildcard $$(patsubst $$(OBJECTSDIR)/%.o,$$(SOURCEDIR)/%,$$@).*) | $(OBJECTSDIR)
-	$(CC) $(CFLAGS) -c -I $(INCLUDEDIR) $(patsubst %.o,%.cpp,$(patsubst $(OBJECTSDIR)/%,$(SOURCEDIR)/%,$@)) -o $@ $(CLIBS)
+	$(CC) $(CFLAGS) -c -I $(INCLUDEDIR) $(patsubst %.o,%.cpp,$(patsubst $(OBJECTSDIR)/%,$(SOURCEDIR)/%,$@)) -o $@
 
 
 $(MODOBJECTS): $$(patsubst %.so,%.cpp,$$(patsubst $$(MODDIR)/%,$$(MODSRCDIR)/%,$$@)) | $(MODDIR) $(TMPDIR)

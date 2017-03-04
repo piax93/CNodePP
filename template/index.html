@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
+    <meta charset="UTF-8">
 </head>
 <body>
 <h1>This is a very simple {{ var2 }} HTML file</h1>
 <p>With a very simple paragraph of text. {{ var1 }} {{ var2 }}.</p>
 <p>{{ get }}</p>
 <p>{{ post }}</p>
-<form method="POST">
-  <input type="text" name="t">
-  <input type="submit" value="send">
+<form method="POST" enctype="multipart/form-data">
+    <input type="text" name="t">
+    <input type="submit" value="send">
 </form>
 <div>{% _test %}</div>
 </body>

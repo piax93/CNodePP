@@ -4,13 +4,13 @@
 
 int main(int argc, char **argv) {
 
-	if(argc > 1) NPPcore::Configuration::setup(argv[1]);
+    if(argc > 1) NPPcore::Configuration::setup(argv[1]);
 
-	NPPcore::Connection connection;
-	connection.listenAndServe();
-	connection.waitAndBleed();
+    NPPcore::Connection connection;
+    connection.listenAndServe();
+    connection.waitAndBleed();
 
-	std::cerr << " -- Terminated -- " << std::endl;
+    std::cerr << " -- Terminated -- " << std::endl;
 
-	return 0;
+    return 0;
 }

@@ -20,17 +20,17 @@ namespace NPPcore {
 
 class Connection {
 private:
-	Socket server_socket;
-	uint16_t nworkers;
-	std::vector<std::thread> workers;
-	std::mutex acceptme;
-	bool working;
-	static void httpProcess(Socket act_sock, struct sockaddr_in clientaddress);
+    Socket server_socket;
+    uint16_t nworkers;
+    std::vector<std::thread> workers;
+    std::mutex acceptme;
+    bool working;
+    static void httpProcess(Socket act_sock, struct sockaddr_in clientaddress);
 public:
-	Connection();
-	void listenAndServe(bool dofork = true);
-	void waitAndBleed();
-	virtual ~Connection();
+    Connection();
+    void listenAndServe(bool dofork = true);
+    void waitAndBleed();
+    virtual ~Connection();
 };
 
 } /* namespace NPPcore */

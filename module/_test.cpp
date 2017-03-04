@@ -4,8 +4,8 @@
 extern "C" {
 
 extern void getPage(NPPcore::HTTPRequest& request, NPPcore::HTTPResponse& response){
-	// response.setBody("You won't see me :D");
-  response.bindTemplate("test.html");
+    // response.setBody("You won't see me :D");
+    response.bindTemplate("test.html");
 }
 
 }
