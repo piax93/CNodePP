@@ -8,8 +8,11 @@
 <p>With a very simple paragraph of text. {{ var1 }} {{ var2 }}.</p>
 <p>{{ get }}</p>
 <p>{{ post }}</p>
-<form method="POST" enctype="multipart/form-data">
-    <input type="text" name="t">
+<p>{{ ta }}</p>
+<form method="POST">
+    <input type="text" name="t"><br>
+    <textarea name="ta"></textarea><br>
+    <input type="file" name="f"><br>
     <input type="submit" value="send">
 </form>
 <div>{% _test %}</div>

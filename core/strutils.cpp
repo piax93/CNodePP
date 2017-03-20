@@ -140,6 +140,31 @@ std::string trim(const std::string& s) {
     return start <= end ? s.substr(start, end - start + 1) : "";
 }
 
+std::string unescape(const std::string& s) {
+    char c;
+    std::string res;
+    auto it = s.begin();
+    while (it != s.end()) {
+        c = *it++;
+        if (c == '\\' && it != s.end()) {
+            switch (*it++) {
+                case '\\': c = '\\'; break;
+                case 'n' : c = '\n'; break;
+                case 't' : c = '\t'; break;
+                case '"' : c = '\"'; break;
+                case '\'': c = '\''; break;
+                case 'r' : c = '\r'; break;
+                default: continue;
+            }
+        }
+        res += c;
+    }
+    return res;
+}
+
+std::string nl2br(const std::string& s) {
+    return std::regex_replace(s, std::regex("\n"), "<br>");
+}
 
 std::string readFileToString(const std::string& filename){
     try {

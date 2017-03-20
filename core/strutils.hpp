@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <vector>
 #include <string>
+#include <regex>
 
 
 namespace util {
@@ -89,6 +90,16 @@ std::string readFileToString(const std::string& filename);
  * Trim both ends of a string
  */
 std::string trim(const std::string& s);
+
+/**
+ * Transform explicit escape symbols into ASCII values
+ */
+std::string unescape(const std::string& s);
+
+/**
+ * Convert newline chatacters to <br> tags
+ */
+std::string nl2br(const std::string& s);
 
 }  /* namespace util */
 

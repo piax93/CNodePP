@@ -8,6 +8,9 @@ int main(int argc, char **argv) {
 
     NPPcore::Connection connection;
     connection.listenAndServe();
+
+    std::cerr << " -- Use CTRL-C to terminate -- " << std::endl;
+
     connection.waitAndBleed();
 
     std::cerr << " -- Terminated -- " << std::endl;

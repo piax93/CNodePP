@@ -1,5 +1,6 @@
 #include "../core/HTTPResponse.hpp"
 #include "../core/HTTPRequest.hpp"
+#include "../core/strutils.hpp"
 #include <unordered_map>
 #include <string>
 
@@ -11,6 +12,7 @@ extern void getPage(NPPcore::HTTPRequest& request, NPPcore::HTTPResponse& respon
     vars["var2"] = "Supercool";
     vars["get"] = request.$GET("text");
     vars["post"] = request.$POST("t");
+    vars["ta"] = util::nl2br(request.$POST("ta"));
     response.bindTemplate("index.html", vars);
 }
 

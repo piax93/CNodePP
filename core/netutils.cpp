@@ -54,18 +54,23 @@ size_t getFileSize(const std::string& filename){
     return st.st_size;
 }
 
+
 bool isRegularFile(const std::string& filename){
     struct stat st;
     if(stat(filename.c_str(), &st)) throw NPPcore::NodeppError("Cannot read file stats");
     return S_ISREG(st.st_mode);
 }
 
-ssize_t sendn(Socket fd, const char* vptr, size_t n) {
+
+ssize_t sendn(Socket fd, const char* vptr, size_t n, bool usewrite) {
     ssize_t nwritten;
     size_t nleft = n;
     const char* ptr = vptr;
+    auto method = usewrite ?
+            [] (int _fd, const char* _ptr, size_t _nleft) -> ssize_t { return write(_fd, _ptr, _nleft); } :
+            [] (int _fd, const char* _ptr, size_t _nleft) -> ssize_t { return send(_fd, _ptr, _nleft, 0); };
     while (nleft > 0) {
-        if ((nwritten = send(fd, ptr, nleft, 0)) <= 0) return -1;
+        if ((nwritten = method(fd, ptr, nleft)) <= 0) return -1;
         nleft -= nwritten;
         ptr += nwritten;
     }

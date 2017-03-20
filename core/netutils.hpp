@@ -28,9 +28,10 @@ Socket createServerSocket(u_int16_t port, uint16_t max_connection_queue);
  * @param fd Socket file descriptor
  * @param vptr Pointer to buffer
  * @param n Buffer size
+ * @param write If true uses the write function instead of send
  * @return Sent bytes, -1 on error
  */
-ssize_t sendn(Socket fd, const char* vptr, size_t n);
+ssize_t sendn(Socket fd, const char* vptr, size_t n, bool usewrite = false);
 
 /**
  * Receive n bytes

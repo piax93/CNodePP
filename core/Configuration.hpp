@@ -9,6 +9,7 @@
 #include <fstream>
 #include <string>
 
+#define MBYTE(x) ((size_t)x * 1048576)
 #define CONF_DEFAULT_FILE "settings.conf"
 #define CONF_ASSIGN_SYMBOL '='
 #define CONF_COMMENT '#'
