@@ -1,16 +1,8 @@
 #ifndef CONNECTION_HPP_
 #define CONNECTION_HPP_
 
-#include "HTTPResponse.hpp"
-#include "ModuleLoader.hpp"
-#include "HTTPRequest.hpp"
-#include "strutils.hpp"
 #include "netutils.hpp"
-#include <sys/socket.h>
-#include <signal.h>
-#include <iostream>
 #include <vector>
-#include <string>
 #include <thread>
 #include <mutex>
 

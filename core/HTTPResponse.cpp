@@ -1,4 +1,14 @@
 #include "HTTPResponse.hpp"
+#include "Configuration.hpp"
+#include "ModuleLoader.hpp"
+#include "NodeppError.hpp"
+#include <unordered_map>
+#include "strutils.hpp"
+#include "netutils.hpp"
+#include <iostream>
+#include <stdio.h>
+#include <string>
+#include <regex>
 
 namespace NPPcore {
 

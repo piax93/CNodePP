@@ -1,19 +1,11 @@
 #ifndef HTTPREQUEST_HPP_
 #define HTTPREQUEST_HPP_
 
-#include "Configuration.hpp"
-#include "NodeppError.hpp"
+#include "netutils.hpp"
 #include <unordered_map>
 #include <netinet/in.h>
-#include "strutils.hpp"
-#include "netutils.hpp"
 #include <arpa/inet.h>
-#include <iostream>
-#include <string.h>
-#include <libgen.h>
 #include <string>
-#include <array>
-#include <regex>
 
 #define MAX_OPTION_LEN 8192
 #define MP_BUFFER_LEN 8192
@@ -61,6 +53,7 @@ public:
     std::string getOption(const std::string& name) const;
     std::string $GET(const std::string& key) const;
     std::string $POST(const std::string& key) const;
+    struct FormFile $FILE(const std::string& key) const;
     friend std::ostream& operator<<(std::ostream &strm, const HTTPRequest& req);
     virtual ~HTTPRequest();
 };

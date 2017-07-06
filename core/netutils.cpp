@@ -1,4 +1,10 @@
+#include "NodeppError.hpp"
 #include "netutils.hpp"
+#include <sys/stat.h>
+#include <iostream>
+#include <unistd.h>
+#include <fcntl.h>
+#include <magic.h>
 
 namespace util {
 

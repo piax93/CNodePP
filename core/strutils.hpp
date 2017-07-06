@@ -1,16 +1,8 @@
 #ifndef UTILITIES_HPP_
 #define UTILITIES_HPP_
 
-#include "NodeppError.hpp"
-#include <algorithm>
-#include <string.h>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <iomanip>
 #include <vector>
 #include <string>
-#include <regex>
 
 
 namespace util {

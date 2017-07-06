@@ -1,4 +1,14 @@
 #include "Connection.hpp"
+#include "Configuration.hpp"
+#include "HTTPResponse.hpp"
+#include "ModuleLoader.hpp"
+#include "NodeppError.hpp"
+#include "HTTPRequest.hpp"
+#include "strutils.hpp"
+#include <sys/socket.h>
+#include <signal.h>
+#include <iostream>
+#include <string>
 
 namespace NPPcore {
 

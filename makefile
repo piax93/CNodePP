@@ -1,5 +1,6 @@
 CC=g++
 CFLAGS = -std=c++1y -rdynamic -O3 -pthread -Wall
+DCFLAGS = -std=c++1y -rdynamic -pthread -Wall -g
 MODFLAGS = -std=c++1y -O3 -shared -fPIC -Wall
 CLIBS = -ldl -lmagic
 
@@ -27,7 +28,7 @@ core: $(OBJECTS) | $(EXECUTABLEDIR)
 
 
 debug: | $(EXECUTABLEDIR)
-	$(CC) $(CFLAGS) -g -o $(EXECUTABLEDIR)/$(EXECUTABLE) $(SOURCEDIR)/*.cpp $(CLIBS)
+	$(CC) $(DCFLAGS) -o $(EXECUTABLEDIR)/$(EXECUTABLE) $(SOURCEDIR)/*.cpp $(CLIBS)
 
 
 run: core settings.conf

@@ -1,13 +1,8 @@
 #ifndef NETUTILS_HPP_
 #define NETUTILS_HPP_
 
-#include "NodeppError.hpp"
 #include <netinet/in.h>
-#include <sys/stat.h>
-#include <iostream>
-#include <unistd.h>
-#include <fcntl.h>
-#include <magic.h>
+#include <string>
 
 #define ADDR_SIZE sizeof(struct sockaddr_in)
 #define BUFF_LEN 4096

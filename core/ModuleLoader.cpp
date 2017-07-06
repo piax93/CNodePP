@@ -1,4 +1,17 @@
 #include "ModuleLoader.hpp"
+#include "Configuration.hpp"
+#include "NodeppError.hpp"
+#include <unordered_map>
+#include <sys/inotify.h>
+#include "strutils.hpp"
+#include <sys/types.h>
+#include <iostream>
+#include <unistd.h>
+#include <string.h>
+#include <dirent.h>
+#include <fstream>
+#include <dlfcn.h>
+#include <chrono>
 
 namespace NPPcore {
 

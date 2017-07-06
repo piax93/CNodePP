@@ -1,4 +1,13 @@
 #include "HTTPRequest.hpp"
+#include "Configuration.hpp"
+#include "NodeppError.hpp"
+#include "strutils.hpp"
+#include <iostream>
+#include <string.h>
+#include <libgen.h>
+#include <unistd.h>
+#include <array>
+#include <regex>
 
 namespace NPPcore {
 
@@ -61,8 +70,8 @@ void HTTPRequest::parseMultipart(Socket socketfd, const std::string& boundary, s
     char* buffprt = buffer.data();
     std::pair<std::string, std::string> opt;
     size_t byteread;
-    std::regex namematcher(";\\s*name=\"(.*)\"");
-    std::regex filenamematcher(";\\s*filename=\"(.*)\"");
+    std::regex namematcher(";\\s*name=\"([^\"]*)\"");
+    std::regex filenamematcher(";\\s*filename=\"([^\"]*)\"");
     std::smatch namematch;
     std::smatch filenamematch;
     // First boundary
@@ -98,7 +107,7 @@ void HTTPRequest::parseMultipart(Socket socketfd, const std::string& boundary, s
                 clen -= chunksize;
                 ff.size += chunksize;
                 util::sendn(targetfd, buffprt, chunksize - segendsize, true);
-                for(int i = 0; i < segendsize; i++) segend[i] = buffprt[chunksize - 2 + i];
+                for(int i = 0; i < segendsize; i++) segend[i] = buffprt[chunksize - segendsize + i];
             }
             clen -= chunksize;
             close(targetfd);
@@ -145,6 +154,11 @@ std::string HTTPRequest::$GET(const std::string& key) const {
 std::string HTTPRequest::$POST(const std::string& key) const {
     std::unordered_map<std::string,std::string>::const_iterator it = postparams.find(key);
     return it == postparams.end() ? "" : it->second;
+}
+
+struct FormFile HTTPRequest::$FILE(const std::string& key) const {
+    std::unordered_map<std::string,struct FormFile>::const_iterator it = files.find(key);
+    return it == files.end() ? FormFile() : it->second;
 }
 
 std::string HTTPRequest::getOption(const std::string& name) const {

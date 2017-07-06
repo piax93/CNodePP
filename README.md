@@ -4,7 +4,7 @@ Have you ever dreamed of creating your own HTTP server from scratch? Me neither,
 
 #### What has been done so far
 * Structure to hot-swap modules.
-* 0.01% of the HTTP standard (just enough to answer GET requests).
+* 0.01% of the HTTP standard (just enough to answer GET and POST requests).
 * Template parsing to insert submodules and variables in html files.
 * Worker threads are "preforked" to limit the maximum number of concurrent requests.
 * Interface to GET static resources.
@@ -13,8 +13,9 @@ Have you ever dreamed of creating your own HTTP server from scratch? Me neither,
 * Complete HTTP specifications (at least the most important features).
 * Add compression library.
 * Add SSL compatibility.
+* Add easy database connection interface.
 * Make it more configurable by adding more parameters to the settings.
-* Make everything a little more robust and write some documentation.
+* Make everything a little more robust and write some documentation and tests.
 
 **If you think this is awfully implemented right now but you like the idea, hop on board and join me in this time wasting project.**
 
@@ -22,16 +23,20 @@ Have you ever dreamed of creating your own HTTP server from scratch? Me neither,
 
 To compile everything and run:
 
-    make core
-    make all_modules
-    bin/core
-
+```bash
+make core
+make all_modules
+bin/core
+```
 
 To create a new module:
 
-    ./genmodule.sh <module_name>
-
+```bash
+./genmodule.sh <module_name>
+```
 
 To compile a single module:
 
-    make module/<module_name>
+```bash
+make module/<module_name>
+```

@@ -1,12 +1,8 @@
 #ifndef CONFIGURATION_HPP_
 #define CONFIGURATION_HPP_
 
-#include "NodeppError.hpp"
-#include "strutils.hpp"
 #include <unordered_map>
-#include <exception>
 #include <iostream>
-#include <fstream>
 #include <string>
 
 #define MBYTE(x) ((size_t)x * 1048576)

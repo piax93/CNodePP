@@ -1,4 +1,12 @@
 #include "strutils.hpp"
+#include "NodeppError.hpp"
+#include <algorithm>
+#include <string.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+#include <regex>
 
 namespace util {
 
@@ -81,6 +89,8 @@ std::string urlDecode(const std::string &toDecode) {
             std::string str(toDecode.substr(i+1, 2));
             out << hexToChar(str);
             i += 2;
+        } else if(toDecode.at(i) == '+') {
+            out << ' ';
         } else {
             out << toDecode.at(i);
         }

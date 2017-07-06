@@ -1,4 +1,8 @@
 #include "Configuration.hpp"
+#include "NodeppError.hpp"
+#include "strutils.hpp"
+#include <exception>
+#include <fstream>
 
 namespace NPPcore {
 

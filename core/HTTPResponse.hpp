@@ -1,17 +1,7 @@
 #ifndef HTTPRESPONSE_HPP_
 #define HTTPRESPONSE_HPP_
 
-#include "Configuration.hpp"
-#include "ModuleLoader.hpp"
-#include "NodeppError.hpp"
 #include "HTTPRequest.hpp"
-#include <unordered_map>
-#include "strutils.hpp"
-#include "netutils.hpp"
-#include <iostream>
-#include <stdio.h>
-#include <string>
-#include <regex>
 
 #define MAX_RECURSION 20
 #define MAX_RESPONSE_LINE 8192
